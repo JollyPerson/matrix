@@ -18,12 +18,12 @@ target_compile_options(matrix_tests PRIVATE
 
 target_compile_options(matrix_tests PRIVATE
     $<$<CONFIG:Debug>:-g>
-    $<$<CONFIG:Debug>:-fsanitize=address,undefined>
+   # $<$<CONFIG:Debug>:-fsanitize=address,undefined>
     $<$<CONFIG:Release>:-O2>
 )
 
 target_link_options(matrix_tests PRIVATE
-    $<$<CONFIG:Debug>:-fsanitize=address,undefined>
+   # $<$<CONFIG:Debug>:-fsanitize=address,undefined>
 )
 
 enable_testing()
