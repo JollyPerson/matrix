@@ -13,3 +13,8 @@ std::size_t Matrix::get_row_count() const{
 std::size_t Matrix::get_coloumn_count() const{
     return cols;
 }
+
+std::size_t Matrix::offset(size_t x, size_t y) const {
+    //Row Major offset
+    return x * cols + y;
+}

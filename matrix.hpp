@@ -8,6 +8,8 @@ private:
     std::size_t cols;
     double* elements;
 
+    std::size_t offset(size_t x, size_t y) const;
+
 public:
     Matrix(std::size_t row, std::size_t col);
 
