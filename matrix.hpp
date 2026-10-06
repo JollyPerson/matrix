@@ -14,6 +14,8 @@ public:
     Matrix(std::size_t row, std::size_t col);
 
     ~Matrix();
+
+    Matrix(Matrix &old);
     
     std::size_t get_row_count() const;
 
@@ -27,5 +29,6 @@ public:
 
     double at(size_t i, size_t j) const;
     
+    void flush_zero();
     
 };

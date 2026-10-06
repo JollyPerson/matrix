@@ -12,6 +12,16 @@ Matrix::~Matrix(){
     delete[] elements;
 }
 
+
+//Will break if rows*cols is > size_t max i.e (size_t_max / rows) < cols
+Matrix::Matrix(Matrix &old): rows(old.rows), cols(old.cols){
+    size_t size = rows*cols;
+    elements = new double[size];
+    for(size_t i = 0; i < size; i++){
+        elements[i] = old.elements[i];
+    }
+}
+
 std::size_t Matrix::get_row_count() const{
     return rows;
 }
@@ -55,4 +65,8 @@ double Matrix::at(std::size_t i, std::size_t j) const {
         throw std::out_of_range("matrix indicies out of bounds");
     }
     return elements[offset(i,j)];
+}
+
+void Matrix::flush_zero(){
+
 }

@@ -10,6 +10,10 @@ add_executable(matrix_tests
     tests.cpp
 )
 
+set_target_properties(matrix_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+
 target_compile_options(matrix_tests PRIVATE
     -Wall
     -Wextra
