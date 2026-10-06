@@ -13,7 +13,19 @@ private:
 public:
     Matrix(std::size_t row, std::size_t col);
 
+    ~Matrix();
+    
     std::size_t get_row_count() const;
 
     std::size_t get_coloumn_count() const;
+
+    double& operator()(size_t i, size_t j);
+
+    double operator()(size_t i, size_t j) const;
+
+    double& at(size_t i, size_t j);
+
+    double at(size_t i, size_t j) const;
+    
+    
 };
