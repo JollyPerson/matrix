@@ -16,10 +16,9 @@ public:
     ~Matrix();
 
     Matrix(Matrix &old);
-    
-    std::size_t get_row_count() const;
 
-    std::size_t get_coloumn_count() const;
+    Matrix& operator=(const Matrix& old);
+   
 
     double& operator()(size_t i, size_t j);
 
@@ -30,5 +29,11 @@ public:
     double at(size_t i, size_t j) const;
     
     void flush_zero();
+
+    void swap(Matrix &other); 
     
+
+     std::size_t get_row_count() const;
+
+    std::size_t get_coloumn_count() const;
 };

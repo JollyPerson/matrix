@@ -22,6 +22,25 @@ Matrix::Matrix(Matrix &old): rows(old.rows), cols(old.cols){
     }
 }
 
+Matrix& Matrix::operator=(const Matrix& old){
+    //Check if it equals itself
+    if(this == &old){
+        return *this;
+    }
+
+    delete[] this->elements;
+    this->rows = old.rows;
+    this->cols = old.cols;
+    size_t size = rows*cols;
+    this->elements = new double[size];
+    for(size_t i=0; i<size; i++){
+        this->elements[i] = old.elements[i];
+    }
+
+    return *this;
+
+}
+
 std::size_t Matrix::get_row_count() const{
     return rows;
 }
@@ -68,5 +87,9 @@ double Matrix::at(std::size_t i, std::size_t j) const {
 }
 
 void Matrix::flush_zero(){
+
+}
+
+void Matrix::swap(Matrix &other){
 
 }
