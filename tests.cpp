@@ -16,10 +16,14 @@ int main()
     assert(rectangluar.get_row_count() == 5);
     assert(rectangluar.get_coloumn_count() == 9);
 
-    Matrix m(2, 3);
-m(0, 1) = 5.0;
-const Matrix& r = m;
-double x = r(0, 1);   
-    r(0,1) == 1.0;
+    rectangluar(2,3) = 5.0;
+    assert(rectangluar(2,3) == 5.0);
+
+    const Matrix& fixe = rectangluar;
+
+    assert(rectangluar(2,3) == 5.0);
+
+    rectangluar(10,3) = 1.0;
+
     return 0;
 }
