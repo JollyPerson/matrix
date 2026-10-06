@@ -1,8 +1,5 @@
+#include "matrix.hpp"
 
+Matrix::Matrix(int r, int c) : rows(r), cols(c) {}
 
-class Matrix {
-
-    public:
-        int rows;
-        int cols;
-};
+Matrix::~Matrix() {}
