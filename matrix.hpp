@@ -37,3 +37,5 @@ public:
 
     std::size_t get_coloumn_count() const;
 };
+
+void swap(Matrix &lhs,Matrix &rhs) noexcept;

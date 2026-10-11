@@ -95,3 +95,7 @@ void Matrix::swap(Matrix &other) noexcept{
     std::swap(this->cols,other.cols);
     std::swap(this->rows,other.rows);
 }
+
+void swap(Matrix &lhs, Matrix &rhs) noexcept{
+    lhs.swap(rhs);
+}
