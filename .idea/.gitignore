@@ -25,5 +25,6 @@
 # CLion / CMake
 /cmake-build-*/
 /build/
+build/
 /out/
 .idea/
