@@ -5,6 +5,25 @@
 /httpRequests/
 # Ignored default folder with query files
 /queries/
+
+# JetBrains IDE metadata
+/*.iml
+/*.ipr
+/*.iws
+/misc.xml
+/modules.xml
+/compiler.xml
+/inspectionProfiles/
+/libraries/
+/uiDesigner.xml
+/sonarlint/
+
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# CLion / CMake
+/cmake-build-*/
+/build/
+/out/
+.idea/
