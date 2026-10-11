@@ -30,7 +30,7 @@ public:
     
     void flush_zero();
 
-    void swap(Matrix &other); 
+    void swap(Matrix &other) noexcept;
     
 
      std::size_t get_row_count() const;

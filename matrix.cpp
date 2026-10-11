@@ -90,6 +90,8 @@ void Matrix::flush_zero(){
 
 }
 
-void Matrix::swap(Matrix &other){
-
+void Matrix::swap(Matrix &other) noexcept{
+    std::swap(this->elements,other.elements);
+    std::swap(this->cols,other.cols);
+    std::swap(this->rows,other.rows);
 }

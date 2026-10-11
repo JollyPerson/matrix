@@ -98,5 +98,6 @@ int main()
 
     assert(rectangluar(2,3) == 5.0);
     test_copy();
+    test_sum_speed();
     return 0;
 }
