@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>
-#include <iosfwd>
+#include <ostream>
 
 class Matrix {
 private:

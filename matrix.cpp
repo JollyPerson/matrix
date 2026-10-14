@@ -227,3 +227,15 @@ bool approx_equal(const Matrix &a, const Matrix &b, double epsilon) {
     return true;
 }
 
+std::ostream& operator<<(std::ostream& os, const Matrix &m) {
+    const size_t rows = m.get_row_count();
+    const size_t cols = m.get_coloumn_count();
+
+    for (size_t i = 0; i<rows; ++i) {
+        for (size_t j=0; j<cols;++j) {
+            os << m(i,j) << (j+1 == cols ? "" : " ");
+        }
+        os << '\n';
+    }
+    return os;
+}
