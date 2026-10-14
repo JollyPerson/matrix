@@ -181,6 +181,24 @@ Matrix Matrix::identity(size_t size) {
     return m;
 }
 
+Matrix::Matrix(std::initializer_list<std::initializer_list<double> > list)
+: rows(list.size()), cols(list.size() == 0 ? 0 :list.begin()->size()), elements(nullptr) {
+    elements = new double[rows*cols]();
+    size_t r = 0;
+    for (const auto& row_list : list) {
+        if (row_list.size() != cols) {
+            delete[] elements;
+            throw std::invalid_argument("All rows must have the same number of columns");
+        }
+        size_t c = 0;
+        for (double val: row_list) {
+            elements[r*cols+c] = val;
+            c++;
+        }
+        r++;
+    }
+}
+
 void swap(Matrix &lhs, Matrix &rhs) noexcept {
     lhs.swap(rhs);
 }
@@ -239,3 +257,4 @@ std::ostream& operator<<(std::ostream& os, const Matrix &m) {
     }
     return os;
 }
+

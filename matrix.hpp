@@ -59,6 +59,8 @@ public:
     std::size_t get_coloumn_count() const;
 
     static Matrix identity(size_t size);
+
+    Matrix(std::initializer_list<std::initializer_list<double>> list);
 };
 
 void swap(Matrix &lhs, Matrix &rhs) noexcept;
