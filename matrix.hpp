@@ -19,7 +19,7 @@ public:
     ~Matrix();
 
     //Copy constructor
-    Matrix(Matrix &old);
+    Matrix(const Matrix &old);
 
     //Copy Assignment
     Matrix &operator=(const Matrix &old);

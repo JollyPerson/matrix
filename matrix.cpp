@@ -13,8 +13,8 @@ Matrix::~Matrix() {
 
 
 //Will break if rows*cols is > size_t max i.e (size_t_max / rows) < cols
-Matrix::Matrix(Matrix &old) : rows(old.rows), cols(old.cols) {
-    size_t size = rows * cols;
+Matrix::Matrix(const Matrix &old) : rows(old.rows), cols(old.cols) {
+    const size_t size = rows * cols;
     elements = new double[size];
     for (size_t i = 0; i < size; i++) {
         elements[i] = old.elements[i];
