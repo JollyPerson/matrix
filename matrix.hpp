@@ -49,7 +49,7 @@ public:
 
     Matrix transpose() const;
 
-    void flush_zero();
+    void flush_zero() const;
 
     void swap(Matrix &other) noexcept;
 

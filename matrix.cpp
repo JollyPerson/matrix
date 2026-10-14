@@ -4,7 +4,7 @@
 
 Matrix::Matrix(std::size_t row, std::size_t coloumn)
     : rows(row), cols(coloumn), elements(nullptr) {
-    elements = new double[rows * cols];
+    elements = new double[rows * cols]();
 }
 
 Matrix::~Matrix() {
@@ -149,8 +149,8 @@ double Matrix::at(std::size_t i, std::size_t j) const {
     return elements[offset(i, j)];
 }
 
-void Matrix::flush_zero() {
-    size_t size = rows * cols;
+void Matrix::flush_zero() const {
+    const size_t size = rows * cols;
     for (size_t i = 0; i < size; i++) {
         elements[i] = 0.0;
     }
