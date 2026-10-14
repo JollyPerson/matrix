@@ -44,6 +44,56 @@ Matrix generate_matrix(int seed, size_t rows, size_t cols, double min=0, double 
 
 }
 
+void test_received_matrix(const Matrix &matrix, const size_t rows, const size_t cols){
+    std::printf("Received matrix with %zu rows and %zu cols\n", rows, cols);
+    std::printf("Matrix has %zu rows and %zu cols\n", matrix.get_row_count(), matrix.get_coloumn_count());
+    assert(matrix.get_row_count() == rows);
+    assert(matrix.get_coloumn_count() == cols);
+}
+
+//Write a test that checks if the target recieves the data and the source is empty and destructible for part 5
+void test_move() {
+    {
+        Matrix source(8,20);
+        source(1,2) = 42.0;
+        source(2,3) = 99.5;
+
+        Matrix target = std::move(source);
+
+        test_received_matrix(target, 8,20);
+        assert(target(1,2) == 42.0);
+        assert(target(2,3) == 99.5);
+
+        assert(source.get_row_count() == 0);
+        assert(source.get_coloumn_count() == 0);
+    }
+}
+
+void test_growing_vector(){
+    // 1. Compile-time check: std::vector::reserve/realloc will only move if noexcept
+    static_assert(std::is_nothrow_move_constructible_v<Matrix>,
+                  "Matrix must be noexcept move-constructible for std::vector to move elements");
+
+    std::vector<Matrix> vec;
+    vec.emplace_back(2, 2);
+    vec[0](0, 0) = 42.0;
+
+    // Record the raw buffer pointer inside vec[0]
+    double* original_buffer = &vec[0](0, 0);
+
+    // Push elements until vector is forced to reallocate its internal buffer
+    size_t initial_cap = vec.capacity();
+    while (vec.size() <= initial_cap) {
+        vec.emplace_back(2, 2);
+    }
+
+    // Because Matrix was moved (not copied) during reallocation, the element buffer
+    // was handed over rather than reallocated: original_buffer must match!
+    assert(&vec[0](0, 0) == original_buffer);
+    assert(vec[0](0, 0) == 42.0);
+    }
+
+
 void test_copy(){
     Matrix first = Matrix(10,10);
     first(5,5) = 7.0;
@@ -99,5 +149,7 @@ int main()
     assert(rectangluar(2,3) == 5.0);
     test_copy();
     test_sum_speed();
+    test_growing_vector();
+    test_move();
     return 0;
 }
