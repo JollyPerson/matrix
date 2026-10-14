@@ -63,6 +63,47 @@ Matrix &Matrix::operator=(const Matrix &old) {
     return *this;
 }
 
+Matrix &Matrix::operator+=(const Matrix &other) {
+    if (rows != other.rows || cols != other.cols) {
+        throw std::invalid_argument("Matrix dimensions must match for addition");
+    }
+    const size_t size = rows * cols;
+    for (size_t i = 0; i < size; i++) {
+        elements[i] += other.elements[i];
+    }
+    return *this;
+}
+
+Matrix &Matrix::operator-=(const Matrix &other) {
+    if (rows != other.rows || cols != other.cols) {
+        throw std::invalid_argument("Matrix dimensions must match for subtraction");
+    }
+    const size_t size = rows * cols;
+    for (size_t i = 0; i < size; i++) {
+        elements[i] -= other.elements[i];
+    }
+    return *this;
+}
+
+Matrix &Matrix::operator*=(const double scalar) {
+    const size_t size = rows * cols;
+    for (size_t i = 0; i < size; i++) {
+        elements[i] *= scalar;
+    }
+    return *this;
+}
+
+Matrix &Matrix::operator/=(const double scalar) {
+    if (scalar == 0.0) {
+        throw std::invalid_argument("Division by zero is not allowed");
+    }
+    const size_t size = rows * cols;
+    for (size_t i = 0; i < size; i++) {
+        elements[i] /= scalar;
+    }
+    return *this;
+}
+
 std::size_t Matrix::get_row_count() const {
     return rows;
 }
@@ -121,6 +162,68 @@ void Matrix::swap(Matrix &other) noexcept {
     std::swap(this->rows, other.rows);
 }
 
+Matrix Matrix::transpose() const {
+    Matrix result(cols,rows);
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            result(j,i) = (*this)(i,j);
+        }
+
+    }
+    return result;
+}
+
+Matrix Matrix::identity(size_t size) {
+    Matrix m(size,size);
+    for (size_t i = 0; i < size; i++) {
+        m(i,i) = 1.0;
+    }
+    return m;
+}
+
 void swap(Matrix &lhs, Matrix &rhs) noexcept {
     lhs.swap(rhs);
 }
+
+Matrix operator+(Matrix lhs, const Matrix &rhs) {
+    lhs += rhs;
+    return lhs;
+}
+
+Matrix operator-(Matrix lhs, const Matrix &rhs) {
+    lhs -= rhs;
+    return lhs;
+}
+
+Matrix operator*(Matrix m, const double scalar) {
+    m *= scalar;
+    return m;
+}
+
+Matrix operator*(const double scalar, Matrix m) {
+    m *= scalar;
+    return m;
+}
+
+Matrix operator-(Matrix m) {
+    m *= -1.0;
+    return m;
+}
+
+Matrix transpose(const Matrix &m) {
+    return m.transpose();
+}
+
+bool approx_equal(const Matrix &a, const Matrix &b, double epsilon) {
+    for (size_t i = 0; i < a.get_row_count(); ++i) {
+        for (size_t j = 0; j < a.get_coloumn_count(); ++j) {
+            double x = a(i, j);
+            double y = b(i, j);
+            if (std::abs(x - y) > epsilon) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
