@@ -18,7 +18,10 @@ public:
     Matrix(Matrix &old);
 
     Matrix& operator=(const Matrix& old);
-   
+    
+    Matrix(Matrix&& other) noexcept;
+
+    Matrix& operator=(Matrix&& other) noexcept;
 
     double& operator()(size_t i, size_t j);
 
@@ -33,9 +36,11 @@ public:
     void swap(Matrix &other) noexcept;
     
 
-     std::size_t get_row_count() const;
+    std::size_t get_row_count() const;
 
     std::size_t get_coloumn_count() const;
+
+    
 };
 
 void swap(Matrix &lhs,Matrix &rhs) noexcept;

@@ -22,6 +22,31 @@ Matrix::Matrix(Matrix &old): rows(old.rows), cols(old.cols){
     }
 }
 
+Matrix::Matrix(Matrix&& other) noexcept : rows(other.rows), cols(other.cols), elements(other.elements){
+    other.rows = 0;
+    other.cols = 0;
+    other.elements = nullptr;
+}
+
+Matrix& Matrix::operator=(Matrix&& other) noexcept{
+    if (this == &other) {
+        return *this;
+    }
+    delete[] elements;
+
+    rows = other.rows;
+    cols = other.cols;
+    elements = other.elements;
+
+    other.rows = 0;
+    other.cols = 0;
+    other.elements = nullptr;
+
+    return *this;
+}
+
+
+
 Matrix& Matrix::operator=(const Matrix& old){
     //Check if it equals itself
     if(this == &old){
@@ -87,7 +112,10 @@ double Matrix::at(std::size_t i, std::size_t j) const {
 }
 
 void Matrix::flush_zero(){
-
+    size_t size = rows*cols;
+    for(size_t i=0; i<size; i++){
+        elements[i] = 0.0;
+    }
 }
 
 void Matrix::swap(Matrix &other) noexcept{
