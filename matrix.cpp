@@ -111,7 +111,7 @@ std::size_t Matrix::get_row_count() const {
 std::size_t Matrix::get_coloumn_count() const {
     return cols;
 }
-
+/**
 std::size_t Matrix::offset(size_t x, size_t y) const {
     //Row Major offset
     return x * cols + y;
@@ -130,7 +130,7 @@ double Matrix::operator()(size_t i, size_t j) const {
     assert(j < cols && "Coloumn index of out of bounds");
     return elements[offset(i, j)];
 }
-
+**/
 
 //will check at runtime if in bounds
 double &Matrix::at(std::size_t i, std::size_t j) {
@@ -226,6 +226,61 @@ Matrix operator*(const double scalar, Matrix m) {
 Matrix operator-(Matrix m) {
     m *= -1.0;
     return m;
+}
+
+Matrix operator*(const Matrix &left, const Matrix &right) {
+    const size_t lc = left.get_coloumn_count();
+    const size_t lr = left.get_row_count();
+
+    const size_t rc = right.get_coloumn_count();
+    const size_t rr = right.get_row_count();
+    if (lc != rr) {
+        throw std::invalid_argument("Matrix dimensions do not match for multiplication");
+    }
+    Matrix result(lr,rc);
+
+    const double* __restrict__ A = left.elements;
+    const double* __restrict__ B = right.elements;
+    double* __restrict__ C = result.elements;
+    //Multiply correpsonding row and coloum and add the sum
+    for (size_t i = 0; i < lr; ++i) {
+        for (size_t k = 0; k < lc; ++k) {
+            const double r  = A[i*lc+k];
+            const double* __restrict__ B_row = &B[k * rc];
+            double* __restrict__ C_row = &C[i * rc];
+
+            for (size_t j = 0; j < rc; ++j) {
+                C_row[j] += r * B_row[j];
+            }
+        }
+    }
+
+    return result;
+}
+
+Matrix slow_multiply(const Matrix &left, const Matrix &right) {
+    const size_t lc = left.get_coloumn_count();
+    const size_t lr = left.get_row_count();
+
+    const size_t rc = right.get_coloumn_count();
+    const size_t rr = right.get_row_count();
+
+    if (lc != rr) {
+        throw std::invalid_argument("Matrix dimensions do not match for multiplication");
+    }
+    Matrix result(lr,rc);
+    //Multiply correpsonding row and coloum and add the sum
+    for (size_t i = 0; i < lr; ++i) {
+        for (size_t j = 0; j < rc; ++j) {
+            double sum = 0.0;
+            for (size_t k = 0; k < lc; ++k) {
+                sum += left(i,k)*right(k,j);
+            }
+            result(i,j) = sum;
+        }
+    }
+
+    return result;
 }
 
 Matrix transpose(const Matrix &m) {

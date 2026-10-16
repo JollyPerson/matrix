@@ -13,8 +13,8 @@
 // Benchmarking & Generation Helpers
 // ==========================================
 
-long double sum_matrix_row(const Matrix &matrix) {
-    long double sum = 0;
+double sum_matrix_row(const Matrix &matrix) {
+    double sum = 0;
     size_t rows = matrix.get_row_count();
     size_t cols = matrix.get_coloumn_count();
     for (size_t x = 0; x < rows; ++x) {
@@ -25,8 +25,8 @@ long double sum_matrix_row(const Matrix &matrix) {
     return sum;
 }
 
-long double sum_matrix_coloumn(const Matrix &matrix) {
-    long double sum = 0;
+double sum_matrix_coloumn(const Matrix &matrix) {
+    double sum = 0;
     size_t rows = matrix.get_row_count();
     size_t cols = matrix.get_coloumn_count();
     for (size_t y = 0; y < cols; ++y) {
@@ -52,20 +52,30 @@ Matrix generate_matrix(int seed, size_t rows, size_t cols, double min = 0, doubl
 void test_sum_speed() {
     auto start = std::chrono::high_resolution_clock::now();
     const Matrix a = generate_matrix(42, 4000, 4000);
-    auto rss = std::chrono::high_resolution_clock::now();
-    long double rs = sum_matrix_coloumn(a);
-    auto rsx = std::chrono::high_resolution_clock::now();
-    auto css = std::chrono::high_resolution_clock::now();
-    long double cs = sum_matrix_row(a);
-    auto csx = std::chrono::high_resolution_clock::now();
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto rd = std::chrono::duration_cast<std::chrono::microseconds>(rsx - rss);
-    auto cd = std::chrono::duration_cast<std::chrono::microseconds>(csx - css);
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    const Matrix b = generate_matrix(43, 4000, 4000);
+
+    // 1. Row-by-row traversal (Stride 1 - Fast)
+    auto t0 = std::chrono::high_resolution_clock::now();
+    double row_sum = sum_matrix_row(a);
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto row_duration = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0);
+
+    // 2. Col-by-col traversal (Stride cols - Slow)
+    auto t2 = std::chrono::high_resolution_clock::now();
+    double col_sum = sum_matrix_coloumn(b);
+    auto t3 = std::chrono::high_resolution_clock::now();
+    auto col_duration = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2);
+
+    auto total_duration = std::chrono::duration_cast<std::chrono::microseconds>(t3 - start);
+
     std::cout << "Sum speed benchmark:\n";
-    std::cout << "  Row-by-row (stride 1)    : " << cd.count() << " micros\n";
-    std::cout << "  Col-by-col (stride cols) : " << rd.count() << " micros\n";
-    std::cout << "  Total                    : " << duration.count() << " micros\n";
+    std::cout << "  Row-by-row (stride 1)    : " << row_duration.count() << " micros (sum = " << row_sum << ")\n";
+    std::cout << "  Col-by-col (stride cols) : " << col_duration.count() << " micros (sum = " << col_sum << ")\n";
+    std::cout << "  Total                    : " << total_duration.count() << " micros\n";
+    double speedup = row_duration.count() > 0 ? static_cast<double>(col_duration.count()) / static_cast<double>(row_duration.count()) : 0.0;
+
+    std::cout << "  Speedup                  : " << std::fixed << std::setprecision(2) << speedup << "x\n";
+
 }
 
 // ==========================================
@@ -356,6 +366,39 @@ void test_stream_output() {
 }
 
 // ==========================================
+// Multiplication
+// ==========================================
+
+void benchmark_fast_slow_multi() {
+    std::cout << "Multiplication speed benchmark:\n";
+    const size_t n = 200;
+    const Matrix a = generate_matrix(1, n, n);
+    const Matrix b = generate_matrix(2, n, n);
+
+    auto start_slow = std::chrono::high_resolution_clock::now();
+    Matrix slow_res = slow_multiply(a, b);
+    auto end_slow = std::chrono::high_resolution_clock::now();
+
+    auto start_fast = std::chrono::high_resolution_clock::now();
+    Matrix fast_res = a * b;
+    auto end_fast = std::chrono::high_resolution_clock::now();
+
+    assert(approx_equal(slow_res, fast_res));
+
+    auto slow_dur = std::chrono::duration_cast<std::chrono::microseconds>(end_slow - start_slow);
+    auto fast_dur = std::chrono::duration_cast<std::chrono::microseconds>(end_fast - start_fast);
+
+
+    std::cout << "  Matrix size              : " << n << "x" << n << "\n";
+    std::cout << "  Slow multiply (i-j-k)    : " << slow_dur.count() << " micros\n";
+    std::cout << "  Fast multiply (i-k-j)    : " << fast_dur.count() << " micros\n";
+    double speedup = fast_dur.count() > 0 ? static_cast<double>(slow_dur.count()) / static_cast<double>(fast_dur.count()) : 0.0;
+
+    std::cout << "  Speedup                  : " << std::fixed << std::setprecision(2) << speedup << "x\n";
+}
+
+
+// ==========================================
 // main
 // ==========================================
 
@@ -385,6 +428,7 @@ int main() {
 
 
     test_sum_speed();
+    benchmark_fast_slow_multi();
 
     std::cout << "All tests passed successfully!\n";
     return 0;

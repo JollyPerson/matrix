@@ -23,7 +23,7 @@ target_compile_options(matrix_tests PRIVATE
 target_compile_options(matrix_tests PRIVATE
     $<$<CONFIG:Debug>:-g>
    # $<$<CONFIG:Debug>:-fsanitize=address,undefined>
-    $<$<CONFIG:Release>:-O2>
+    $<$<CONFIG:Release>:-O3 -march=native>
 )
 
 target_link_options(matrix_tests PRIVATE

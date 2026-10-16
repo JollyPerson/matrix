@@ -9,7 +9,9 @@ private:
     std::size_t cols;
     double *elements;
 
-    std::size_t offset(size_t x, size_t y) const;
+    friend Matrix operator*(const Matrix &left, const Matrix &right);
+
+
 
 public:
     Matrix(std::size_t row, std::size_t col);
@@ -30,9 +32,17 @@ public:
     //Move assignment (accepts a rvalue)
     Matrix &operator=(Matrix &&other) noexcept;
 
-    double &operator()(size_t i, size_t j);
+    inline std::size_t offset(size_t x, size_t y) const {
+        return x * cols + y;
+    }
 
-    double operator()(size_t i, size_t j) const;
+    inline double& operator()(size_t i, size_t j) {
+        return elements[i * cols + j]; // inlined directly to a single pointer offset!
+    }
+
+    inline double operator()(size_t i, size_t j) const {
+        return elements[i * cols + j];
+    }
 
     double &at(size_t i, size_t j);
 
@@ -75,9 +85,14 @@ Matrix operator*(double scalar, Matrix m);
 
 Matrix operator-(Matrix m);
 
+Matrix slow_multiply(const Matrix &left, const Matrix &right);
+
 Matrix transpose(const Matrix &m);
 
 bool approx_equal(const Matrix &a, const Matrix &b, double epsilon = 1e-9);
 
 std::ostream& operator<<(std::ostream& os, const Matrix& m);
+
+//Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the unknown matrix vector
+Matrix solve(const Matrix &A, const Matrix &b);
 
