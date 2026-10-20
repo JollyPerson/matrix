@@ -6,7 +6,7 @@ private:
     size_t swap_count;
 public:
     LUDecomposition(const Matrix &A);
-    
+
     Matrix solve(const Matrix &b) const;
     const Matrix &get_factors() const;
     const std::vector<size_t> &get_permutation() const;

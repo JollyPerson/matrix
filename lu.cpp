@@ -6,8 +6,12 @@ LUDecomposition::LUDecomposition(const Matrix &A) {
 }
 
 Matrix LUDecomposition::solve(const Matrix &b) const {
-    // Implementation for solving the system
-}
+    size_t rowB = b.get_row_count();
+    size_t colB = b.get_coloumn_count();
+
+    if (rowB != factors.get_row_count() || colB != 1) {
+        throw std::invalid_argument("Matrix B dimensions do not match for solving.");
+    }
 
 const Matrix &LUDecomposition::get_factors() const {
     return factors;
@@ -32,4 +36,4 @@ double LUDecomposition::determinat() const {
 Matrix LUDecomposition::inverse() const {
     // Implementation for calculating the inverse
 }
-} // namespace matrix
+}
