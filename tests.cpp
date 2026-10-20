@@ -398,6 +398,25 @@ void benchmark_fast_slow_multi() {
 }
 
 
+void test_solver() {
+    Matrix A{
+        {1.0,  2.0,  1.0,  1.0},
+        {2.0,  1.0, -1.0,  1.0},
+        {1.0, -1.0,  2.0, -1.0},
+        {1.0,  1.0,  1.0,  2.0}
+    };
+
+    Matrix b{
+        { 7.0},
+        { 8.0},
+        {-6.0},
+        { 8.0}
+    };
+
+    Matrix x = solve(A,b);
+    std::cout << "x:\n" << x << "\n";
+}
+
 // ==========================================
 // main
 // ==========================================
@@ -428,8 +447,8 @@ int main() {
 
 
     test_sum_speed();
-    benchmark_fast_slow_multi();
-
+    //benchmark_fast_slow_multi();
+    test_solver();
     std::cout << "All tests passed successfully!\n";
     return 0;
 }

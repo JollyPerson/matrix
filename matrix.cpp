@@ -1,6 +1,7 @@
 #include "matrix.hpp"
 #include <stdexcept>
 #include <assert.h>
+#include <iostream>
 
 Matrix::Matrix(std::size_t row, std::size_t coloumn)
     : rows(row), cols(coloumn), elements(nullptr) {
@@ -311,5 +312,70 @@ std::ostream& operator<<(std::ostream& os, const Matrix &m) {
         os << '\n';
     }
     return os;
+}
+
+//Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the unknown matrix vector
+Matrix solve(Matrix A, Matrix b) {
+    auto colA = A.get_coloumn_count();
+    auto rowA = A.get_row_count();
+    auto colB = b.get_coloumn_count();
+    auto rowB = b.get_row_count();
+
+    if (colA != rowA) {
+        throw std::invalid_argument("Matrix A is not square for Gaussian Elimination");
+    }
+    if (colB != 1) {
+        throw std::invalid_argument("Matrix B is not a column vector for Gaussian Elimination");
+    }
+    if (rowA != rowB) {
+        throw std::invalid_argument("Matrix row dimensions of A and B do not match for Gaussian elimination.");
+    }
+    std::cout << "A before forward elimination:\n" << A << "\n";
+    std::cout << "b before forward elimination:\n" << b << "\n";
+    //forward elimination to zero below the diag.
+    //we need to go diagonal
+    for (size_t i = 0; i < colA; ++i) {
+        const double pivot = A(i, i);
+        if (pivot == 0.0) {
+            throw std::runtime_error("Zero pivot encountered in forward elimination");
+        }
+
+        for (size_t j = i + 1; j < rowA; ++j) {
+            const double factor = A(j, i) / pivot;
+
+            // Explicitly zero the cleared entry to avoid floating-point residual noise (e.g. 1e-17)
+            A(j, i) = 0.0;
+
+            // Eliminate remaining columns in row j
+            for (size_t k = i + 1; k < colA; ++k) {
+                A(j, k) -= factor * A(i, k);
+            }
+
+            // Apply the same operation to vector b
+            b(j, 0) -= factor * b(i, 0);
+        }
+    }
+    std::cout << "A after forward elimination:\n" << A << "\n";
+    std::cout << "b after forward elimination:\n" << b << "\n";
+
+    Matrix x(rowA, 1);
+
+    for (size_t step = 0; step < rowB; ++step) {
+        size_t i = (rowB - 1) - step;
+
+        if (A(i, i) == 0.0) {
+            throw std::runtime_error("Zero pivot encountered in back substitution");
+        }
+
+        double sum = b(i, 0);
+        for (size_t j = i + 1; j < rowB; ++j) {
+            sum -= A(i, j) * x(j, 0);
+        }
+        x(i, 0) = sum / A(i, i);
+    }
+    std::cout << "x after back substitution:\n" << x << "\n";
+    std::cout << "A after back substitution:\n" << A << "\n";
+    std::cout << "B after back substitution:\n" << b << "\n";
+    return x;
 }
 

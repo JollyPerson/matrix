@@ -94,5 +94,5 @@ bool approx_equal(const Matrix &a, const Matrix &b, double epsilon = 1e-9);
 std::ostream& operator<<(std::ostream& os, const Matrix& m);
 
 //Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the unknown matrix vector
-Matrix solve(const Matrix &A, const Matrix &b);
+Matrix solve(Matrix A, Matrix b);
 
