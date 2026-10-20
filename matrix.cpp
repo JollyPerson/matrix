@@ -1,7 +1,10 @@
 #include "matrix.hpp"
+#include <algorithm>
 #include <stdexcept>
 #include <assert.h>
 #include <iostream>
+#include <cmath>
+#include <limits>
 
 Matrix::Matrix(std::size_t row, std::size_t coloumn)
     : rows(row), cols(coloumn), elements(nullptr) {
@@ -330,16 +333,37 @@ Matrix solve(Matrix A, Matrix b) {
     if (rowA != rowB) {
         throw std::invalid_argument("Matrix row dimensions of A and B do not match for Gaussian elimination.");
     }
-    std::cout << "A before forward elimination:\n" << A << "\n";
-    std::cout << "b before forward elimination:\n" << b << "\n";
+    const double scale = maxValue(A);
+    const double tolerance =
+        std::numeric_limits<double>::epsilon() *
+        scale *
+        static_cast<double>(rowA);
+    //std::cout << "A before forward elimination:\n" << A << "\n";
+    //std::cout << "b before forward elimination:\n" << b << "\n";
     //forward elimination to zero below the diag.
     //we need to go diagonal
     for (size_t i = 0; i < colA; ++i) {
-        const double pivot = A(i, i);
-        if (pivot == 0.0) {
-            throw std::runtime_error("Zero pivot encountered in forward elimination");
+        std::size_t pivot_row = i;
+        double largest_pivot = std::abs(A(i, i));
+        for(size_t row = i+1; row<rowA; ++row){
+            const double candidate = std::abs(A(row, i));
+            if (candidate > largest_pivot) {
+                largest_pivot = candidate;
+                pivot_row = row;
+            }
+        }
+        if(largest_pivot <=tolerance){
+            throw std::runtime_error("Matrix is singular or nearly singular, cannot solve.");
         }
 
+        if(pivot_row != i){
+            for(std::size_t column = 0; column < colA; ++column){
+                std::swap(A(i, column), A(pivot_row, column));
+            }
+            std::swap(b(i, 0), b(pivot_row, 0));
+        }
+
+        const double pivot = A(i, i);
         for (size_t j = i + 1; j < rowA; ++j) {
             const double factor = A(j, i) / pivot;
 
@@ -355,16 +379,16 @@ Matrix solve(Matrix A, Matrix b) {
             b(j, 0) -= factor * b(i, 0);
         }
     }
-    std::cout << "A after forward elimination:\n" << A << "\n";
-    std::cout << "b after forward elimination:\n" << b << "\n";
+    //std::cout << "A after forward elimination:\n" << A << "\n";
+    //std::cout << "b after forward elimination:\n" << b << "\n";
 
     Matrix x(rowA, 1);
 
     for (size_t step = 0; step < rowB; ++step) {
         size_t i = (rowB - 1) - step;
 
-        if (A(i, i) == 0.0) {
-            throw std::runtime_error("Zero pivot encountered in back substitution");
+        if (std::abs(A(i, i)) <= tolerance) {
+            throw std::runtime_error("Matrix is singular or nearly singular during back substitution, cannot solve.");
         }
 
         double sum = b(i, 0);
@@ -373,9 +397,29 @@ Matrix solve(Matrix A, Matrix b) {
         }
         x(i, 0) = sum / A(i, i);
     }
-    std::cout << "x after back substitution:\n" << x << "\n";
-    std::cout << "A after back substitution:\n" << A << "\n";
-    std::cout << "B after back substitution:\n" << b << "\n";
+    //std::cout << "x after back substitution:\n" << x << "\n";
+    //std::cout << "A after back substitution:\n" << A << "\n";
+    //std::cout << "B after back substitution:\n" << b << "\n";
     return x;
 }
 
+double maxValue(const Matrix &m) {
+    double max_val = 0.0;
+    for (size_t i = 0; i < m.get_row_count(); ++i) {
+        for (size_t j = 0; j < m.get_coloumn_count(); ++j) {
+            max_val = std::max(max_val, std::abs(m(i, j)));
+        }
+    }
+    return max_val;
+}
+
+double residual(const Matrix &A, const Matrix &b, const Matrix &x){
+    //r = b - Ax
+    Matrix difference = b - (A * x);
+    double maximum = 0;
+    size_t rows = difference.get_row_count();
+    for(size_t i =0; i<rows; ++i){
+        maximum = std::max(maximum, std::abs(difference(i,0)));
+    }
+    return maximum;
+}

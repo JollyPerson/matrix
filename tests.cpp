@@ -415,6 +415,62 @@ void test_solver() {
 
     Matrix x = solve(A,b);
     std::cout << "x:\n" << x << "\n";
+    assert(residual(A, b, x) < 1e-12);
+}
+
+void test_solver_partial_pivoting() {
+    Matrix A{
+        {0.0, 1.0},
+        {1.0, 1.0}
+    };
+    Matrix b{
+        {1.0},
+        {2.0}
+    };
+
+    Matrix x = solve(A, b);
+
+    assert(std::abs(x(0, 0) - 1.0) < 1e-12);
+    assert(std::abs(x(1, 0) - 1.0) < 1e-12);
+    assert(residual(A, b, x) < 1e-12);
+}
+
+void test_solver_tiny_pivot() {
+    constexpr double epsilon = 1e-20;
+    Matrix A{
+        {epsilon, 1.0},
+        {1.0, 1.0}
+    };
+    Matrix b{
+        {1.0},
+        {2.0}
+    };
+
+    Matrix x = solve(A, b);
+
+    assert(std::abs(x(0, 0) - 1.0) < 1e-12);
+    assert(std::abs(x(1, 0) - 1.0) < 1e-12);
+    assert(residual(A, b, x) < 1e-12);
+}
+
+void test_solver_singular_matrix() {
+    Matrix A{
+        {1.0, 2.0},
+        {2.0, 4.0}
+    };
+    Matrix b{
+        {3.0},
+        {6.0}
+    };
+
+    bool threw = false;
+    try {
+        (void)solve(A, b);
+    } catch (const std::runtime_error &) {
+        threw = true;
+    }
+
+    assert(threw);
 }
 
 // ==========================================
@@ -449,6 +505,9 @@ int main() {
     test_sum_speed();
     //benchmark_fast_slow_multi();
     test_solver();
+    test_solver_partial_pivoting();
+    test_solver_tiny_pivot();
+    test_solver_singular_matrix();
     std::cout << "All tests passed successfully!\n";
     return 0;
 }

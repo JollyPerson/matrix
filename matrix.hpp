@@ -96,3 +96,6 @@ std::ostream& operator<<(std::ostream& os, const Matrix& m);
 //Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the unknown matrix vector
 Matrix solve(Matrix A, Matrix b);
 
+double maxValue(const Matrix &m);
+
+double residual(const Matrix &A, const Matrix &b, const Matrix &x);
