@@ -1,16 +1,25 @@
-namespace: matrix {
+#pragma once
+
+#include "matrix.hpp"
+#include <cstddef>
+#include <vector>
+
 class LUDecomposition {
 private:
     Matrix factors;
-    std::vector<size_t> permutation;
-    size_t swap_count;
+    std::vector<std::size_t> permutation;
+    std::size_t swap_count;
+
 public:
-    LUDecomposition(const Matrix &A);
+    explicit LUDecomposition(const Matrix &A);
+    Matrix factor();
 
     Matrix solve(const Matrix &b) const;
+
     const Matrix &get_factors() const;
-    const std::vector<size_t> &get_permutation() const;
-    size_t get_swap_count() const;
-    double determinat() const;
+    const std::vector<std::size_t> &get_permutation() const;
+    std::size_t get_swap_count() const;
+
+    double determinant() const;
     Matrix inverse() const;
-}
+};

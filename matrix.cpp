@@ -291,6 +291,16 @@ Matrix transpose(const Matrix &m) {
     return m.transpose();
 }
 
+
+void Matrix::swap_rows(size_t row1, size_t row2) {
+    if (row1 >= rows || row2 >= rows) {
+        throw std::out_of_range("Row index out of bounds for swap_rows");
+    }
+    for (size_t j = 0; j < cols; ++j) {
+        std::swap((*this)(row1, j), (*this)(row2, j));
+    }
+}
+
 bool approx_equal(const Matrix &a, const Matrix &b, double epsilon) {
     for (size_t i = 0; i < a.get_row_count(); ++i) {
         for (size_t j = 0; j < a.get_coloumn_count(); ++j) {

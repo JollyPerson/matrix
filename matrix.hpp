@@ -71,6 +71,8 @@ public:
     static Matrix identity(size_t size);
 
     Matrix(std::initializer_list<std::initializer_list<double>> list);
+    
+    void swap_rows(size_t row1, size_t row2);
 };
 
 void swap(Matrix &lhs, Matrix &rhs) noexcept;

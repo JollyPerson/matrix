@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(matrix_tests
     matrix.cpp
     tests.cpp
+    lu.cpp
 )
 
 set_target_properties(matrix_tests PROPERTIES
