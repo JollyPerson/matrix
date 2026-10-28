@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "lu.hpp"
 #include "matrix.hpp"
 
 // ==========================================
@@ -524,15 +525,8 @@ double max_forward_error(const Matrix &computed_x, const Matrix &true_x) {
     return err;
 }
 
-void run_stability_experiments() {
-    std::cout << "\n==========================================\n";
-    std::cout << "Running Numerical Stability Experiments\n";
-    std::cout << "==========================================\n\n";
-
-    // ----------------------------------------------------
-    // Experiment 1: Epsilon system with and without pivoting
-    // ----------------------------------------------------
-    std::cout << "--- Experiment 1: Tiny Pivot (epsilon = 1e-20) ---\n";
+void test_stability_epsilon_pivoting() {
+    std::cout << "\n--- Stability Test: Tiny Pivot (epsilon = 1e-20) ---\n";
     constexpr double eps = 1e-20;
     Matrix A_eps{{eps, 1.0}, {1.0, 1.0}};
     Matrix b_eps{{1.0}, {2.0}};
@@ -542,12 +536,14 @@ void run_stability_experiments() {
 
     std::cout << "Without pivoting : x = [" << x_no_pivot(0, 0) << ", " << x_no_pivot(1, 0) << "]\n";
     std::cout << "With pivoting    : x = [" << x_with_pivot(0, 0) << ", " << x_with_pivot(1, 0) << "]\n";
-    std::cout << "True solution    : x ≈ [1.0, 1.0]\n\n";
 
-    // ----------------------------------------------------
-    // Experiment 2: Random matrices residual check
-    // ----------------------------------------------------
-    std::cout << "--- Experiment 2: Random Matrices (Residual) ---\n";
+    assert(std::abs(x_with_pivot(0, 0) - 1.0) < 1e-12);
+    assert(std::abs(x_with_pivot(1, 0) - 1.0) < 1e-12);
+    assert(std::abs(x_no_pivot(0, 0) - 0.0) < 1e-12);
+}
+
+void test_stability_random_matrices() {
+    std::cout << "\n--- Stability Test: Random Matrices Residuals ---\n";
     std::cout << std::left << std::setw(10) << "Size (N)"
               << std::setw(25) << "Residual (||b - Ax||_inf)" << "\n";
     for (size_t n : {10, 100, 500}) {
@@ -557,13 +553,12 @@ void run_stability_experiments() {
         double res = residual(A, b, x);
         std::cout << std::left << std::setw(10) << n
                   << std::setw(25) << std::scientific << std::setprecision(6) << res << "\n";
+        assert(res < 1e-8);
     }
-    std::cout << "\n";
+}
 
-    // ----------------------------------------------------
-    // Experiment 3: Hilbert Matrices (Residual vs Forward Error)
-    // ----------------------------------------------------
-    std::cout << "--- Experiment 3: Hilbert Matrix Conditioning ---\n";
+void test_stability_hilbert_ill_conditioning() {
+    std::cout << "\n--- Stability Test: Hilbert Matrix Conditioning ---\n";
     std::cout << std::left << std::setw(10) << "Size (N)"
               << std::setw(25) << "Residual (||b - Hx||)"
               << std::setw(25) << "Forward Error (||x - x_true||)" << "\n";
@@ -584,17 +579,18 @@ void run_stability_experiments() {
             std::cout << std::left << std::setw(10) << n
                       << std::setw(25) << std::scientific << std::setprecision(6) << res
                       << std::setw(25) << std::scientific << std::setprecision(6) << f_err << "\n";
+
+            assert(res < 1e-12);
         } catch (const std::runtime_error &e) {
             std::cout << std::left << std::setw(10) << n
                       << "[Rejected by solver: " << e.what() << "]\n";
+            assert(n >= 12);
         }
     }
-    std::cout << "\n";
+}
 
-    // ----------------------------------------------------
-    // Experiment 4: Singular vs Near-Singular Matrix
-    // ----------------------------------------------------
-    std::cout << "--- Experiment 4: Singular vs Near-Singular Matrix ---\n";
+void test_stability_singular_vs_perturbed() {
+    std::cout << "\n--- Stability Test: Singular vs Near-Singular Matrix ---\n";
     Matrix A_sing{{1.0, 2.0}, {1.0, 2.0}};
     Matrix b_sing{{3.0}, {3.0}};
     bool threw_sing = false;
@@ -603,8 +599,7 @@ void run_stability_experiments() {
     } catch (const std::runtime_error &) {
         threw_sing = true;
     }
-    std::cout << "Identical rows (exact singular): Threw expected exception = "
-              << (threw_sing ? "YES" : "NO") << "\n";
+    assert(threw_sing);
 
     Matrix A_near{{1.0, 2.0}, {1.0, 2.0 + 1e-13}};
     try {
@@ -614,7 +609,152 @@ void run_stability_experiments() {
     } catch (const std::exception &e) {
         std::cout << "Perturbed by 1e-13: Threw exception: " << e.what() << "\n";
     }
-    std::cout << "==========================================\n\n";
+}
+
+// ==========================================
+// LU Decomposition Tests
+// ==========================================
+
+void test_lu_factor_reconstruction() {
+    Matrix A{
+        {1.0,  2.0,  1.0,  1.0},
+        {2.0,  1.0, -1.0,  1.0},
+        {1.0, -1.0,  2.0, -1.0},
+        {1.0,  1.0,  1.0,  2.0}
+    };
+
+    matrix::LUDecomposition lu(A);
+    const size_t n = A.get_row_count();
+
+    Matrix L = Matrix::identity(n);
+    Matrix U(n, n);
+    const Matrix &F = lu.get_factors();
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            if (i > j) {
+                L(i, j) = F(i, j);
+            } else {
+                U(i, j) = F(i, j);
+            }
+        }
+    }
+
+    Matrix PA(n, n);
+    const auto &P = lu.get_permutation();
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            PA(i, j) = A(P[i], j);
+        }
+    }
+
+    assert(approx_equal(L * U, PA, 1e-12));
+}
+
+void test_lu_solver() {
+    Matrix A{
+        {1.0,  2.0,  1.0,  1.0},
+        {2.0,  1.0, -1.0,  1.0},
+        {1.0, -1.0,  2.0, -1.0},
+        {1.0,  1.0,  1.0,  2.0}
+    };
+
+    Matrix b{
+        { 7.0},
+        { 8.0},
+        {-6.0},
+        { 8.0}
+    };
+
+    matrix::LUDecomposition lu(A);
+    Matrix x = lu.solve(b);
+
+    assert(residual(A, b, x) < 1e-12);
+}
+
+void test_lu_determinant() {
+    Matrix A{
+        {2.0, 1.0},
+        {1.0, 3.0}
+    };
+    matrix::LUDecomposition lu_A(A);
+    assert(std::abs(lu_A.determinant() - 5.0) < 1e-12);
+
+    Matrix B{
+        {0.0, 1.0},
+        {1.0, 0.0}
+    };
+    matrix::LUDecomposition lu_B(B);
+    assert(std::abs(lu_B.determinant() - (-1.0)) < 1e-12);
+
+    // det(AB) == det(A) * det(B)
+    Matrix AB = A * B;
+    matrix::LUDecomposition lu_AB(AB);
+    assert(std::abs(lu_AB.determinant() - (lu_A.determinant() * lu_B.determinant())) < 1e-11);
+}
+
+void test_lu_inverse() {
+    Matrix A{
+        {1.0,  2.0,  1.0,  1.0},
+        {2.0,  1.0, -1.0,  1.0},
+        {1.0, -1.0,  2.0, -1.0},
+        {1.0,  1.0,  1.0,  2.0}
+    };
+
+    matrix::LUDecomposition lu(A);
+    Matrix A_inv = lu.inverse();
+
+    assert(approx_equal(A * A_inv, Matrix::identity(A.get_row_count()), 1e-12));
+    assert(approx_equal(A_inv * A, Matrix::identity(A.get_row_count()), 1e-12));
+}
+
+void test_lu_singular() {
+    Matrix singular{
+        {1.0, 2.0},
+        {2.0, 4.0}
+    };
+
+    bool threw = false;
+    try {
+        matrix::LUDecomposition lu(singular);
+        (void)lu;
+    } catch (const std::runtime_error &) {
+        threw = true;
+    }
+
+    assert(threw);
+}
+
+void benchmark_lu_vs_gaussian_multisolve() {
+    std::cout << "\n--- Benchmark: 10 Solves (Full Solve vs LU Re-use) ---\n";
+    const size_t n = 200;
+    Matrix A = generate_matrix(777, n, n, -50.0, 50.0);
+    std::vector<Matrix> rhs_list;
+    rhs_list.reserve(10);
+    for (int i = 0; i < 10; ++i) {
+        rhs_list.push_back(generate_matrix(888 + i, n, 1, -50.0, 50.0));
+    }
+
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (const auto &b : rhs_list) {
+        Matrix x = solve(A, b);
+        (void)x;
+    }
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto full_solve_dur = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0);
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    matrix::LUDecomposition lu(A);
+    for (const auto &b : rhs_list) {
+        Matrix x = lu.solve(b);
+        (void)x;
+    }
+    auto t3 = std::chrono::high_resolution_clock::now();
+    auto lu_dur = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2);
+
+    std::cout << "  10x Full solve (repeats cubic elimination) : " << full_solve_dur.count() << " micros\n";
+    std::cout << "  1x Factor + 10x LU solves                  : " << lu_dur.count() << " micros\n";
+    double speedup = lu_dur.count() > 0 ? static_cast<double>(full_solve_dur.count()) / static_cast<double>(lu_dur.count()) : 0.0;
+    std::cout << "  Speedup                                    : " << std::fixed << std::setprecision(2) << speedup << "x\n\n";
 }
 
 // ==========================================
@@ -652,7 +792,21 @@ int main() {
     test_solver_partial_pivoting();
     test_solver_tiny_pivot();
     test_solver_singular_matrix();
-    run_stability_experiments();
+
+    // Stability standalone tests
+    test_stability_epsilon_pivoting();
+    test_stability_random_matrices();
+    test_stability_hilbert_ill_conditioning();
+    test_stability_singular_vs_perturbed();
+
+    // LU standalone tests
+    test_lu_factor_reconstruction();
+    test_lu_solver();
+    test_lu_determinant();
+    test_lu_inverse();
+    test_lu_singular();
+    benchmark_lu_vs_gaussian_multisolve();
+
     std::cout << "All tests passed successfully!\n";
     return 0;
 }
