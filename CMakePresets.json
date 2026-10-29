@@ -2,10 +2,47 @@
     "version": 6,
     "configurePresets": [
         {
-            "name": "debug",
-            "displayName": "Debug",
+            "name": "debug-macos",
+            "displayName": "Debug (macOS)",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/Debug",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "/usr/bin/clang",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            }
+        },
+        {
+            "name": "release-macos",
+            "displayName": "Release (macOS)",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/Release",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "/usr/bin/clang",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            }
+        },
+        {
+            "name": "debug-windows",
+            "displayName": "Debug (Windows/MSYS2)",
             "generator": "MinGW Makefiles",
             "binaryDir": "${sourceDir}/build/Debug",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
@@ -13,10 +50,15 @@
             }
         },
         {
-            "name": "release",
-            "displayName": "Release",
+            "name": "release-windows",
+            "displayName": "Release (Windows/MSYS2)",
             "generator": "MinGW Makefiles",
             "binaryDir": "${sourceDir}/build/Release",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
@@ -26,12 +68,20 @@
     ],
     "buildPresets": [
         {
-            "name": "debug",
-            "configurePreset": "debug"
+            "name": "debug-macos",
+            "configurePreset": "debug-macos"
         },
         {
-            "name": "release",
-            "configurePreset": "release"
+            "name": "release-macos",
+            "configurePreset": "release-macos"
+        },
+        {
+            "name": "debug-windows",
+            "configurePreset": "debug-windows"
+        },
+        {
+            "name": "release-windows",
+            "configurePreset": "release-windows"
         }
     ]
 }

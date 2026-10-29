@@ -5,29 +5,37 @@
             "name": "Debug CMake target",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\Debug\\matrix_tests.exe",
+            "program": "${workspaceFolder}/build/Debug/matrix_tests",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "gdb",
-            "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe",
-            "preLaunchTask": "CMake: Build Debug"
+            "MIMode": "lldb",
+            "preLaunchTask": "CMake: Build Debug",
+            "windows": {
+                "program": "${workspaceFolder}\\build\\Debug\\matrix_tests.exe",
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe"
+            }
         },
         {
             "name": "Run Release CMake target",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\Release\\matrix_tests.exe",
+            "program": "${workspaceFolder}/build/Release/matrix_tests",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "gdb",
-            "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe",
-            "preLaunchTask": "CMake: Build Release"
+            "MIMode": "lldb",
+            "preLaunchTask": "CMake: Build Release",
+            "windows": {
+                "program": "${workspaceFolder}\\build\\Release\\matrix_tests.exe",
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe"
+            }
         }
     ]
 }
