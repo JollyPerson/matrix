@@ -68,7 +68,7 @@ public:
 
     Matrix<T> transpose() const;
 
-    void flush_zero() const;
+    void flush_zero();
 
     void swap(Matrix<T> &other) noexcept;
 
