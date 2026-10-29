@@ -1,34 +1,34 @@
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator+(Matrix<T> lhs, const Matrix<T>& rhs) {
     lhs += rhs;
     return lhs;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator-(Matrix<T> lhs, const Matrix<T>& rhs) {
     lhs -= rhs;
     return lhs;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(Matrix<T> matrix, T scalar) {
     matrix *= scalar;
     return matrix;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(T scalar, Matrix<T> matrix) {
     matrix *= scalar;
     return matrix;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator-(Matrix<T> matrix) {
     matrix *= T{-1};
     return matrix;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right) {
     const std::size_t left_cols = left.get_coloumn_count();
     const std::size_t left_rows = left.get_row_count();
@@ -58,7 +58,7 @@ Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right) {
 
 namespace matrix {
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> slow_multiply(const Matrix<T>& left, const Matrix<T>& right) {
     const std::size_t left_cols = left.get_coloumn_count();
     const std::size_t left_rows = left.get_row_count();
@@ -82,12 +82,12 @@ Matrix<T> slow_multiply(const Matrix<T>& left, const Matrix<T>& right) {
     return result;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> transpose(const Matrix<T>& matrix) {
     return matrix.transpose();
 }
 
-template <typename T>
+template <MatrixElement T>
 bool approx_equal(const Matrix<T>& left, const Matrix<T>& right, T epsilon) {
     if (left.get_row_count() != right.get_row_count() ||
         left.get_coloumn_count() != right.get_coloumn_count()) {
@@ -106,7 +106,7 @@ bool approx_equal(const Matrix<T>& left, const Matrix<T>& right, T epsilon) {
 
 }
 
-template <typename T>
+template <MatrixElement T>
 std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
     for (std::size_t i = 0; i < matrix.get_row_count(); ++i) {
         for (std::size_t j = 0; j < matrix.get_coloumn_count(); ++j) {
@@ -189,7 +189,7 @@ Matrix<T> solve(Matrix<T> A, Matrix<T> b) {
     return x;
 }
 
-template <typename T>
+template <MatrixElement T>
 T maxValue(const Matrix<T>& matrix) {
     T maximum = T{0};
     for (std::size_t i = 0; i < matrix.get_row_count(); ++i) {
@@ -200,7 +200,7 @@ T maxValue(const Matrix<T>& matrix) {
     return maximum;
 }
 
-template <typename T>
+template <MatrixElement T>
 T residual(const Matrix<T>& A, const Matrix<T>& b, const Matrix<T>& x) {
     const Matrix<T> difference = b - (A * x);
     T maximum = T{0};

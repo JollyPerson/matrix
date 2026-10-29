@@ -2,35 +2,35 @@
 
 #include "matrix.hpp"
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator+(Matrix<T> lhs, const Matrix<T>& rhs);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator-(Matrix<T> lhs, const Matrix<T>& rhs);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(Matrix<T> matrix, T scalar);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(T scalar, Matrix<T> matrix);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator-(Matrix<T> matrix);
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right);
 
-template <typename T>
+template <MatrixElement T>
 std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix);
 
 namespace matrix {
-    template <typename T>
+    template <MatrixElement T>
     Matrix<T> slow_multiply(const Matrix<T>& left, const Matrix<T>& right);
 
-    template <typename T>
+    template <MatrixElement T>
     Matrix<T> transpose(const Matrix<T>& matrix);
 
-    template <typename T>
+    template <MatrixElement T>
     bool approx_equal(
         const Matrix<T>& left,
         const Matrix<T>& right,
@@ -40,10 +40,10 @@ namespace matrix {
     template <std::floating_point T>
     Matrix<T> solve(Matrix<T> A, Matrix<T> b);
 
-    template <typename T>
+    template <MatrixElement T>
     T maxValue(const Matrix<T>& matrix);
 
-    template <typename T>
+    template <MatrixElement T>
     T residual(const Matrix<T>& A, const Matrix<T>& b, const Matrix<T>& x);
 }
 

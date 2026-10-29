@@ -5,18 +5,18 @@
 #include <cmath>
 #include <limits>
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(std::size_t row, std::size_t coloumn)
     : rows(row), cols(coloumn), elements(nullptr) {
     elements = new T[rows * cols]();
 }
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T>::~Matrix() {
     delete[] elements;
 }
    
-template<typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(const Matrix<T> &old) : rows(old.rows), cols(old.cols) {
     const size_t size = rows * cols;
     elements = new T[size];
@@ -25,7 +25,7 @@ Matrix<T>::Matrix(const Matrix<T> &old) : rows(old.rows), cols(old.cols) {
     }
 }
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(Matrix &&other) noexcept : rows(other.rows), cols(other.cols), elements(other.elements) {
     other.rows = 0;
     other.cols = 0;
@@ -33,7 +33,7 @@ Matrix<T>::Matrix(Matrix &&other) noexcept : rows(other.rows), cols(other.cols),
 }
 
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
     if (this == &other) {
         return *this;
@@ -52,7 +52,7 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
 }
 
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator=(const Matrix<T> &old) {
     //Check if it equals itself
     if (this == &old) {
@@ -71,7 +71,7 @@ Matrix<T> &Matrix<T>::operator=(const Matrix<T> &old) {
     return *this;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
     if (rows != other.rows || cols != other.cols) {
         throw std::invalid_argument("Matrix dimensions must match for addition");
@@ -83,7 +83,7 @@ Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
     return *this;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &other) {
     if (rows != other.rows || cols != other.cols) {
         throw std::invalid_argument("Matrix dimensions must match for subtraction");
@@ -95,7 +95,7 @@ Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &other) {
     return *this;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator*=(const T scalar) {
     const size_t size = rows * cols;
     for (size_t i = 0; i < size; i++) {
@@ -104,7 +104,7 @@ Matrix<T> &Matrix<T>::operator*=(const T scalar) {
     return *this;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator/=(const T scalar) {
     if (scalar == T{0.0}) {
         throw std::invalid_argument("Division by zero is not allowed");
@@ -116,12 +116,12 @@ Matrix<T> &Matrix<T>::operator/=(const T scalar) {
     return *this;
 }
 
-template <typename T>
+template <MatrixElement T>
 std::size_t Matrix<T>::get_row_count() const {
     return rows;
 }
 
-template <typename T>
+template <MatrixElement T>
 std::size_t Matrix<T>::get_coloumn_count() const {
     return cols;
 }
@@ -147,7 +147,7 @@ double Matrix::operator()(size_t i, size_t j) const {
 **/
 
 //will check at runtime if in bounds
-template <typename T>
+template <MatrixElement T>
 T &Matrix<T>::at(std::size_t i, std::size_t j) {
     if (i >= rows || j >= cols) {
         throw std::out_of_range("matrix indicies out of bounds");
@@ -158,7 +158,7 @@ T &Matrix<T>::at(std::size_t i, std::size_t j) {
 
 
 //Will check at runtime if in bounds
-template <typename T>
+template <MatrixElement T>
 T Matrix<T>::at(std::size_t i, std::size_t j) const {
     if (i >= rows || j >= cols) {
         throw std::out_of_range("matrix indicies out of bounds");
@@ -166,7 +166,7 @@ T Matrix<T>::at(std::size_t i, std::size_t j) const {
     return elements[offset(i, j)];
 }
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::flush_zero() {
     const size_t size = rows * cols;
     for (size_t i = 0; i < size; i++) {
@@ -174,14 +174,14 @@ void Matrix<T>::flush_zero() {
     }
 }
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::swap(Matrix<T> &other) noexcept {
     std::swap(this->elements, other.elements);
     std::swap(this->cols, other.cols);
     std::swap(this->rows, other.rows);
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::transpose() const {
     Matrix<T> result(cols,rows);
     for (size_t i = 0; i < rows; i++) {
@@ -193,7 +193,7 @@ Matrix<T> Matrix<T>::transpose() const {
     return result;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T> Matrix<T>::identity(size_t size) {
     Matrix<T> m(size,size);
     for (size_t i = 0; i < size; i++) {
@@ -202,7 +202,7 @@ Matrix<T> Matrix<T>::identity(size_t size) {
     return m;
 }
 
-template <typename T>
+template <MatrixElement T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T> > list)
 : rows(list.size()), cols(list.size() == 0 ? 0 :list.begin()->size()), elements(nullptr) {
     elements = new T[rows*cols]();
@@ -221,12 +221,12 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T> > list)
     }
 }
 
-template <typename T>
+template <MatrixElement T>
 void swap(Matrix<T> &lhs, Matrix<T> &rhs) noexcept {
     lhs.swap(rhs);
 }
 
-template <typename T>
+template <MatrixElement T>
 void Matrix<T>::swap_rows(size_t row1, size_t row2) {
     if (row1 >= rows || row2 >= rows) {
         throw std::out_of_range("Row index out of bounds for swap_rows");

@@ -6,13 +6,18 @@
 #include <initializer_list>
 #include <limits>
 
-template<typename T>
+template <typename T>
+concept MatrixElement =
+    (std::integral<T> || std::floating_point<T>) &&
+    !std::same_as<T, bool>;
+
+template <MatrixElement T>
 class Matrix;
 
-template<typename T>
+template <MatrixElement T>
 Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right);
 
-template<typename T = double>
+template <MatrixElement T = double>
 class Matrix {
 private:
     std::size_t rows;

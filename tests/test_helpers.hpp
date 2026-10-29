@@ -8,11 +8,18 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
 #include <vector>
 
 #include "../lu.hpp"
 #include "../matrix.hpp"
+
+static_assert(MatrixElement<int>);
+static_assert(MatrixElement<float>);
+static_assert(MatrixElement<double>);
+static_assert(!MatrixElement<bool>);
+static_assert(!MatrixElement<std::string>);
 
 template <typename T>
 concept has_matrix_solver = requires(Matrix<T> A, Matrix<T> b) {
