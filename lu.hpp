@@ -6,21 +6,21 @@
 namespace matrix {
     class LUDecomposition {
     private:
-        Matrix factors;
+        Matrix<double> factors;
         std::vector<std::size_t> permutation;
         std::size_t swap_count;
 
     public:
-        explicit LUDecomposition(const Matrix &A);
-        Matrix factor();
+        explicit LUDecomposition(const Matrix<double> &A);
+        Matrix<double> factor();
 
-        Matrix solve(const Matrix &b) const;
+        Matrix<double> solve(const Matrix<double> &b) const;
 
-        const Matrix &get_factors() const;
+        const Matrix<double> &get_factors() const;
         const std::vector<std::size_t> &get_permutation() const;
         std::size_t get_swap_count() const;
 
         double determinant() const;
-        Matrix inverse() const;
+        Matrix<double> inverse() const;
     };
 }

@@ -2,16 +2,24 @@
 
 #include <cstddef>
 #include <ostream>
+#include <concepts>
+#include <initializer_list>
+#include <limits>
 
 template<typename T>
+class Matrix;
+
+template<typename T>
+Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right);
+
+template<typename T = double>
 class Matrix {
 private:
     std::size_t rows;
     std::size_t cols;
     T *elements;
 
-    friend Matrix operator*(const Matrix &left, const Matrix &right);
-
+    friend Matrix<T> operator*<>(const Matrix<T> &left, const Matrix<T> &right);
 
 
 public:
@@ -41,7 +49,7 @@ public:
         return elements[i * cols + j]; // inlined directly to a single pointer offset!
     }
 
-    inline T operator()(size_t i, size_t j) const {
+    inline const T& operator()(size_t i, size_t j) const {
         return elements[i * cols + j];
     }
 
@@ -51,11 +59,11 @@ public:
 
     Matrix<T> &operator+=(const Matrix &other);
 
-    Matrix<T> &operator*=(double scalar);
+    Matrix<T> &operator*=(T scalar);
 
     Matrix<T> &operator-=(const Matrix &other);
 
-    Matrix<T> &operator/=(double scalar);
+    Matrix<T> &operator/=(T scalar);
 
 
     Matrix<T> transpose() const;
@@ -71,7 +79,7 @@ public:
 
     static Matrix<T> identity(size_t size);
 
-    Matrix<T>(std::initializer_list<std::initializer_list<T>> list);
+    Matrix(std::initializer_list<std::initializer_list<T>> list);
     
     void swap_rows(size_t row1, size_t row2);
 };
@@ -79,27 +87,41 @@ public:
 template<typename T>
 void swap(Matrix<T> &lhs, Matrix<T> &rhs) noexcept;
 
+template <typename T>
 Matrix<T> operator+(Matrix<T> lhs, const Matrix<T> &rhs);
 
+template <typename T>
 Matrix<T> operator-(Matrix<T> lhs, const Matrix<T> &rhs);
 
-Matrix<T> operator*(Matrix<T> m, double scalar);
+template <typename T>
+Matrix<T> operator*(Matrix<T> m, T scalar);
 
-Matrix<T> operator*(double scalar, Matrix<T> m);
+template <typename T>
+Matrix<T> operator*(T scalar, Matrix<T> m);
 
+template <typename T>
 Matrix<T> operator-(Matrix<T> m);
 
-Matrix slow_multiply(const Matrix &left, const Matrix &right);
+template <typename T>
+Matrix<T> slow_multiply(const Matrix<T> &left, const Matrix<T> &right);
 
-Matrix transpose(const Matrix &m);
+template <typename T>
+Matrix<T> transpose(const Matrix<T> &m);
 
-bool approx_equal(const Matrix &a, const Matrix &b, double epsilon = 1e-9);
+template <typename T>
+bool approx_equal(const Matrix<T> &a, const Matrix<T> &b, T epsilon = T{100} * std::numeric_limits<T>::epsilon());
 
-std::ostream& operator<<(std::ostream& os, const Matrix& m);
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& m);
 
-//Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the unknown matrix vector
-Matrix solve(Matrix A, Matrix b);
+//Gaussian Elimination to solve for x of Ax = B where A is a n square matrix and B is n x 1 matrix (n length vector) and x is the   unknown matrix vector
+template <std::floating_point T>
+Matrix<T> solve(Matrix<T> A, Matrix<T> b);
 
-double maxValue(const Matrix &m);
+template <typename T>
+T maxValue(const Matrix<T> &m);
 
-double residual(const Matrix &A, const Matrix &b, const Matrix &x);
+template <typename T>
+T residual(const Matrix<T> &A, const Matrix<T> &b, const Matrix<T> &x);
+
+#include "matrix.tpp"

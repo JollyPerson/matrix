@@ -7,7 +7,7 @@
 #include <numeric>
 
 namespace matrix {
-    LUDecomposition::LUDecomposition(const Matrix &A) : factors(A), permutation(A.get_row_count()), swap_count(0) {
+    LUDecomposition::LUDecomposition(const Matrix<double> &A) : factors(A), permutation(A.get_row_count()), swap_count(0) {
         const std::size_t n = A.get_row_count();
         if (n == 0) {
             throw std::invalid_argument(
@@ -21,7 +21,7 @@ namespace matrix {
         factor();
     }
 
-    Matrix LUDecomposition::factor() {
+    Matrix<double> LUDecomposition::factor() {
         const size_t n = factors.get_row_count();
         const double scale = maxValue(factors);
         const double tolerance = std::numeric_limits<double>::epsilon() * scale * static_cast<double>(n);
@@ -37,7 +37,7 @@ namespace matrix {
                 }
             }
             if (largest < tolerance) {
-                throw std::runtime_error("Matrix is singular to working precision.");
+                throw std::runtime_error("Matrix<double> is singular to working precision.");
             }
             if (pivot_row != k) {
                 std::swap(permutation[k], permutation[pivot_row]);
@@ -65,16 +65,16 @@ namespace matrix {
         return factors;
     }
 
-    Matrix LUDecomposition::solve(const Matrix &b) const {
+    Matrix<double> LUDecomposition::solve(const Matrix<double> &b) const {
         size_t rowB = b.get_row_count();
         size_t colB = b.get_coloumn_count();
         size_t fr =  factors.get_row_count();
 
         if (rowB != factors.get_row_count() || colB != 1) {
-            throw std::invalid_argument("Matrix B dimensions do not match for solving.");
+            throw std::invalid_argument("Matrix<double> B dimensions do not match for solving.");
         }
 
-        Matrix y(fr,1);
+        Matrix<double> y(fr,1);
         for (size_t i=0; i<fr; ++i) {
             y(i,0) = b(permutation[i], 0);
         }
@@ -87,7 +87,7 @@ namespace matrix {
             y(i,0) = sum;
         }
 
-        Matrix x(fr,1);
+        Matrix<double> x(fr,1);
         for (size_t step = 0; step < fr; ++step) {
             size_t i = (fr - 1) - step;
             double sum = y(i,0);
@@ -99,7 +99,7 @@ namespace matrix {
         return x;
     }
 
-    const Matrix &LUDecomposition::get_factors() const {
+    const Matrix<double> &LUDecomposition::get_factors() const {
         return factors;
     }
 
@@ -121,13 +121,13 @@ namespace matrix {
          return det;
     }
 
-    Matrix LUDecomposition::inverse() const {
+    Matrix<double> LUDecomposition::inverse() const {
         const size_t fr = factors.get_row_count();
-        Matrix inv(fr,fr);
+        Matrix<double> inv(fr,fr);
         for (size_t col = 0; col<fr;++col) {
-            Matrix e(fr,1);
+            Matrix<double> e(fr,1);
             e(col,0) = 1.0;
-            Matrix x_col = solve(e);
+            Matrix<double> x_col = solve(e);
             for (size_t row = 0; row<fr;++row) {
                 inv(row,col) = x_col(row,0);
             }
