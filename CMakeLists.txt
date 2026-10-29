@@ -7,9 +7,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(matrix_tests
     tests.cpp
+    tests/matrix_tests.cpp
+    tests/arithmetic_tests.cpp
+    tests/solver_tests.cpp
+    tests/lu_tests.cpp
+    tests/benchmark_tests.cpp
+    tests/test_declarations.hpp
+    tests/test_helpers.hpp
     lu.cpp
     matrix.hpp
     matrix.tpp
+    matrix_algorithms.hpp
+    matrix_algorithms.tpp
 )
 
 set_target_properties(matrix_tests PROPERTIES
