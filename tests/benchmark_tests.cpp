@@ -1,5 +1,7 @@
 #include "test_helpers.hpp"
 
+volatile double benchmark_sink = 0.0;
+
 template <typename MatrixType>
 double benchmark_sum(const MatrixType& matrix) {
     double sum = 0.0;
@@ -38,6 +40,7 @@ void benchmark_vector_vs_raw_array() {
     const auto raw_duration =
         std::chrono::duration_cast<std::chrono::microseconds>(raw_end - raw_start);
 
+    benchmark_sink = vector_sum + raw_sum;
     std::cout << "Vector versus raw-array benchmark:\n";
     std::cout << "  Matrix size                 : " << size << "x" << size << "\n";
     std::cout << "  std::vector storage         : " << vector_duration.count() << " micros\n";
@@ -103,4 +106,3 @@ void benchmark_fast_slow_multi() {
 
     std::cout << "  Speedup                  : " << std::fixed << std::setprecision(2) << speedup << "x\n";
 }
-

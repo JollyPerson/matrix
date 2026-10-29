@@ -7,7 +7,18 @@
 
 template <MatrixElement T>
 Matrix<T>::Matrix(std::size_t row, std::size_t coloumn)
-    : rows(row), cols(coloumn), elements(rows * cols) {}
+    : rows(row), cols(coloumn), elements(rows * cols) {
+#ifndef NDEBUG
+    assert_invariant();
+#endif
+}
+
+#ifndef NDEBUG
+template <MatrixElement T>
+void Matrix<T>::assert_invariant() const noexcept {
+    assert(elements.empty() || elements.size() == rows * cols);
+}
+#endif
 
 template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
@@ -117,6 +128,10 @@ void Matrix<T>::swap(Matrix<T> &other) noexcept {
     std::swap(this->elements, other.elements);
     std::swap(this->cols, other.cols);
     std::swap(this->rows, other.rows);
+#ifndef NDEBUG
+    assert_invariant();
+    other.assert_invariant();
+#endif
 }
 
 template <MatrixElement T>
@@ -155,6 +170,9 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T> > list)
         }
         r++;
     }
+#ifndef NDEBUG
+    assert_invariant();
+#endif
 }
 
 template <MatrixElement T>

@@ -27,6 +27,9 @@ private:
 
     friend Matrix<T> operator*<>(const Matrix<T> &left, const Matrix<T> &right);
 
+#ifndef NDEBUG
+    void assert_invariant() const noexcept;
+#endif
 
 public:
     Matrix(std::size_t row, std::size_t col);
