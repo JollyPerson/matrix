@@ -1,5 +1,48 @@
 #include "test_helpers.hpp"
 
+template <typename MatrixType>
+double benchmark_sum(const MatrixType& matrix) {
+    double sum = 0.0;
+    for (std::size_t row = 0; row < matrix.get_row_count(); ++row) {
+        for (std::size_t col = 0; col < matrix.get_coloumn_count(); ++col) {
+            sum += matrix(row, col);
+        }
+    }
+    return sum;
+}
+
+void benchmark_vector_vs_raw_array() {
+    constexpr std::size_t size = 800;
+    Matrix<double> vector_matrix(size, size);
+    RawArrayMatrix<double> raw_matrix(size, size);
+
+    for (std::size_t row = 0; row < size; ++row) {
+        for (std::size_t col = 0; col < size; ++col) {
+            const double value = static_cast<double>((row * size + col) % 17);
+            vector_matrix(row, col) = value;
+            raw_matrix(row, col) = value;
+        }
+    }
+
+    const auto vector_start = std::chrono::high_resolution_clock::now();
+    const double vector_sum = benchmark_sum(vector_matrix);
+    const auto vector_end = std::chrono::high_resolution_clock::now();
+
+    const auto raw_start = std::chrono::high_resolution_clock::now();
+    const double raw_sum = benchmark_sum(raw_matrix);
+    const auto raw_end = std::chrono::high_resolution_clock::now();
+
+    assert(vector_sum == raw_sum);
+    const auto vector_duration =
+        std::chrono::duration_cast<std::chrono::microseconds>(vector_end - vector_start);
+    const auto raw_duration =
+        std::chrono::duration_cast<std::chrono::microseconds>(raw_end - raw_start);
+
+    std::cout << "Vector versus raw-array benchmark:\n";
+    std::cout << "  Matrix size                 : " << size << "x" << size << "\n";
+    std::cout << "  std::vector storage         : " << vector_duration.count() << " micros\n";
+    std::cout << "  raw array storage           : " << raw_duration.count() << " micros\n";
+}
 void test_sum_speed() {
     auto start = std::chrono::high_resolution_clock::now();
     const Matrix<double> a = generate_matrix<double>(42, 4000, 4000);
@@ -60,5 +103,4 @@ void benchmark_fast_slow_multi() {
 
     std::cout << "  Speedup                  : " << std::fixed << std::setprecision(2) << speedup << "x\n";
 }
-
 

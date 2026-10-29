@@ -41,6 +41,7 @@ int main() {
     test_lu_singular();
     test_lu_float();
     benchmark_lu_vs_gaussian_multisolve();
+    benchmark_vector_vs_raw_array();
 
     std::cout << "All tests passed successfully!\n";
     return 0;

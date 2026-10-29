@@ -40,9 +40,9 @@ Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right) {
     }
 
     Matrix<T> result(left_rows, right_cols);
-    const T* left_data = left.elements;
-    const T* right_data = right.elements;
-    T* result_data = result.elements;
+    const T* left_data = left.elements.data();
+    const T* right_data = right.elements.data();
+    T* result_data = result.elements.data();
     for (std::size_t i = 0; i < left_rows; ++i) {
         for (std::size_t k = 0; k < left_cols; ++k) {
             const T value = left_data[i * left_cols + k];

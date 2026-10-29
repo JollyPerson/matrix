@@ -7,69 +7,7 @@
 
 template <MatrixElement T>
 Matrix<T>::Matrix(std::size_t row, std::size_t coloumn)
-    : rows(row), cols(coloumn), elements(nullptr) {
-    elements = new T[rows * cols]();
-}
-
-template <MatrixElement T>
-Matrix<T>::~Matrix() {
-    delete[] elements;
-}
-   
-template <MatrixElement T>
-Matrix<T>::Matrix(const Matrix<T> &old) : rows(old.rows), cols(old.cols) {
-    const size_t size = rows * cols;
-    elements = new T[size];
-    for (size_t i = 0; i < size; i++) {
-        elements[i] = old.elements[i];
-    }
-}
-
-template <MatrixElement T>
-Matrix<T>::Matrix(Matrix &&other) noexcept : rows(other.rows), cols(other.cols), elements(other.elements) {
-    other.rows = 0;
-    other.cols = 0;
-    other.elements = nullptr;
-}
-
-
-template <MatrixElement T>
-Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
-    if (this == &other) {
-        return *this;
-    }
-    delete[] elements;
-
-    rows = other.rows;
-    cols = other.cols;
-    elements = other.elements;
-
-    other.rows = 0;
-    other.cols = 0;
-    other.elements = nullptr;
-
-    return *this;
-}
-
-
-template <MatrixElement T>
-Matrix<T> &Matrix<T>::operator=(const Matrix<T> &old) {
-    //Check if it equals itself
-    if (this == &old) {
-        return *this;
-    }
-
-    delete[] this->elements;
-    this->rows = old.rows;
-    this->cols = old.cols;
-    size_t size = rows * cols;
-    this->elements = new T[size];
-    for (size_t i = 0; i < size; i++) {
-        this->elements[i] = old.elements[i];
-    }
-
-    return *this;
-}
+    : rows(row), cols(coloumn), elements(rows * cols) {}
 
 template <MatrixElement T>
 Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
@@ -204,12 +142,10 @@ Matrix<T> Matrix<T>::identity(size_t size) {
 
 template <MatrixElement T>
 Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T> > list)
-: rows(list.size()), cols(list.size() == 0 ? 0 :list.begin()->size()), elements(nullptr) {
-    elements = new T[rows*cols]();
+: rows(list.size()), cols(list.size() == 0 ? 0 :list.begin()->size()), elements(rows * cols) {
     size_t r = 0;
     for (const auto& row_list : list) {
         if (row_list.size() != cols) {
-            delete[] elements;
             throw std::invalid_argument("All rows must have the same number of columns");
         }
         size_t c = 0;

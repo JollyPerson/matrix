@@ -31,3 +31,4 @@ void test_lu_inverse();
 void test_lu_singular();
 void test_lu_float();
 void benchmark_lu_vs_gaussian_multisolve();
+void benchmark_vector_vs_raw_array();

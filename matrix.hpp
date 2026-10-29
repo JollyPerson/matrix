@@ -5,6 +5,7 @@
 #include <concepts>
 #include <initializer_list>
 #include <limits>
+#include <vector>
 
 template <typename T>
 concept MatrixElement =
@@ -22,29 +23,13 @@ class Matrix {
 private:
     std::size_t rows;
     std::size_t cols;
-    T *elements;
+    std::vector<T> elements;
 
     friend Matrix<T> operator*<>(const Matrix<T> &left, const Matrix<T> &right);
 
 
 public:
     Matrix(std::size_t row, std::size_t col);
-
-    //Rule of 5: Destructor, Copy Constructor, Copy Assignment, Move Constructor, Move Assignment
-    //Desturctor
-    ~Matrix();
-
-    //Copy constructor
-    Matrix(const Matrix &old);
-
-    //Copy Assignment
-    Matrix<T> &operator=(const Matrix &old);
-
-    //Move constructor (accepts a rvalue)
-    Matrix(Matrix &&other) noexcept;
-
-    //Move assignment (accepts a rvalue)
-    Matrix<T> &operator=(Matrix &&other) noexcept;
 
     inline std::size_t offset(size_t x, size_t y) const {
         return x * cols + y;

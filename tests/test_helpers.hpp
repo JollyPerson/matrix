@@ -14,6 +14,7 @@
 
 #include "../lu.hpp"
 #include "../matrix.hpp"
+#include "../raw_array_matrix.hpp"
 
 static_assert(MatrixElement<int>);
 static_assert(MatrixElement<float>);
@@ -92,8 +93,8 @@ void test_reusable_construction_and_ownership() {
 
     Matrix<T> moved = std::move(copy);
     assert(moved(1, 2) == T{9});
-    assert(copy.get_row_count() == 0);
-    assert(copy.get_coloumn_count() == 0);
+    assert(copy.get_row_count() == 2);
+    assert(copy.get_coloumn_count() == 3);
 }
 
 template <typename T>

@@ -18,6 +18,7 @@ add_executable(matrix_tests
     lu.tpp
     matrix.hpp
     matrix.tpp
+    raw_array_matrix.hpp
     matrix_algorithms.hpp
     matrix_algorithms.tpp
 )
