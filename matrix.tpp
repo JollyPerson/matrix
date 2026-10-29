@@ -167,7 +167,7 @@ T Matrix<T>::at(std::size_t i, std::size_t j) const {
 }
 
 template <typename T>
-void Matrix<T>::flush_zero() const {
+void Matrix<T>::flush_zero() {
     const size_t size = rows * cols;
     for (size_t i = 0; i < size; i++) {
         elements[i] = T{0};
