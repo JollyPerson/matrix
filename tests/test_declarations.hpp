@@ -13,6 +13,7 @@ void test_transpose();
 void test_identity_matrix();
 void test_shape_mismatch();
 void test_stream_output();
+void test_copy_counting_elements();
 void test_sum_speed();
 void benchmark_fast_slow_multi();
 void test_solver();

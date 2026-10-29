@@ -153,7 +153,22 @@ void test_stream_output() {
     assert(output.find("4") != std::string::npos);
 }
 
+void test_copy_counting_elements() {
+    CopyCountingNumber::copies = 0;
+    CopyCountingNumber::moves = 0;
+
+    Matrix<CopyCountingNumber> a{{CopyCountingNumber{1}, CopyCountingNumber{2}}};
+    Matrix<CopyCountingNumber> b{{CopyCountingNumber{3}, CopyCountingNumber{4}}};
+    Matrix<CopyCountingNumber> c{{CopyCountingNumber{5}, CopyCountingNumber{6}}};
+
+    Matrix<CopyCountingNumber> result = a + b + c;
+
+    assert(result(0, 0).value == 9);
+    assert(result(0, 1).value == 12);
+    assert(CopyCountingNumber::copies > 0);
+    assert(CopyCountingNumber::copies < 100);
+}
+
 // ==========================================
 // Multiplication
 // ==========================================
-

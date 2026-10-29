@@ -24,6 +24,7 @@ int main() {
     test_identity_matrix();
     test_shape_mismatch();
     test_stream_output();
+    test_copy_counting_elements();
     test_sum_speed();
     test_solver();
     test_solver_partial_pivoting();
@@ -41,6 +42,7 @@ int main() {
     test_lu_singular();
     test_lu_float();
     benchmark_lu_vs_gaussian_multisolve();
+    benchmark_fast_slow_multi();
     benchmark_vector_vs_raw_array();
 
     std::cout << "All tests passed successfully!\n";

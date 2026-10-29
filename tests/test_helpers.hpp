@@ -22,6 +22,87 @@ static_assert(MatrixElement<double>);
 static_assert(!MatrixElement<bool>);
 static_assert(!MatrixElement<std::string>);
 
+struct CopyCountingNumber {
+    static inline std::size_t copies = 0;
+    static inline std::size_t moves = 0;
+
+    int value{};
+
+    CopyCountingNumber() = default;
+    CopyCountingNumber(int value) : value(value) {}
+
+    CopyCountingNumber(const CopyCountingNumber& other) : value(other.value) {
+        ++copies;
+    }
+
+    CopyCountingNumber(CopyCountingNumber&& other) noexcept : value(other.value) {
+        ++moves;
+    }
+
+    CopyCountingNumber& operator=(const CopyCountingNumber& other) {
+        value = other.value;
+        ++copies;
+        return *this;
+    }
+
+    CopyCountingNumber& operator=(CopyCountingNumber&& other) noexcept {
+        value = other.value;
+        ++moves;
+        return *this;
+    }
+
+    CopyCountingNumber& operator+=(const CopyCountingNumber& other) {
+        value += other.value;
+        return *this;
+    }
+
+    CopyCountingNumber& operator-=(const CopyCountingNumber& other) {
+        value -= other.value;
+        return *this;
+    }
+
+    CopyCountingNumber& operator*=(const CopyCountingNumber& other) {
+        value *= other.value;
+        return *this;
+    }
+
+    CopyCountingNumber& operator/=(const CopyCountingNumber& other) {
+        value /= other.value;
+        return *this;
+    }
+};
+
+inline CopyCountingNumber operator+(CopyCountingNumber lhs, const CopyCountingNumber& rhs) {
+    lhs += rhs;
+    return lhs;
+}
+
+inline CopyCountingNumber operator-(CopyCountingNumber lhs, const CopyCountingNumber& rhs) {
+    lhs -= rhs;
+    return lhs;
+}
+
+inline CopyCountingNumber operator*(CopyCountingNumber lhs, const CopyCountingNumber& rhs) {
+    lhs *= rhs;
+    return lhs;
+}
+
+inline CopyCountingNumber operator/(CopyCountingNumber lhs, const CopyCountingNumber& rhs) {
+    lhs /= rhs;
+    return lhs;
+}
+
+inline CopyCountingNumber operator-(CopyCountingNumber value) {
+    value.value = -value.value;
+    return value;
+}
+
+inline bool operator==(const CopyCountingNumber& lhs, const CopyCountingNumber& rhs) {
+    return lhs.value == rhs.value;
+}
+
+static_assert(MatrixElement<CopyCountingNumber>);
+
 template <typename T>
 concept has_matrix_solver = requires(Matrix<T> A, Matrix<T> b) {
     matrix::solve(A, b);

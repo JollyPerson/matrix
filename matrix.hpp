@@ -9,8 +9,23 @@
 
 template <typename T>
 concept MatrixElement =
-    (std::integral<T> || std::floating_point<T>) &&
-    !std::same_as<T, bool>;
+    !std::same_as<T, bool> &&
+    std::default_initializable<T> &&
+    std::copy_constructible<T> &&
+    requires(T a, T b) {
+        T{0};
+        T{1};
+        { a == b } -> std::convertible_to<bool>;
+        { a += b } -> std::same_as<T&>;
+        { a -= b } -> std::same_as<T&>;
+        { a *= b } -> std::same_as<T&>;
+        { a /= b } -> std::same_as<T&>;
+        { a + b } -> std::convertible_to<T>;
+        { a - b } -> std::convertible_to<T>;
+        { a * b } -> std::convertible_to<T>;
+        { a / b } -> std::convertible_to<T>;
+        { -a } -> std::convertible_to<T>;
+    };
 
 template <MatrixElement T>
 class Matrix;

@@ -164,7 +164,7 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T> > list)
             throw std::invalid_argument("All rows must have the same number of columns");
         }
         size_t c = 0;
-        for (const T val: row_list) {
+        for (const T& val: row_list) {
             elements[r*cols+c] = val;
             c++;
         }
