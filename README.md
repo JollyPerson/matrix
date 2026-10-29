@@ -1,5 +1,7 @@
 # Matrix
 
+[![CI](https://github.com/JollyPerson/matrix/actions/workflows/ci.yml/badge.svg)](https://github.com/JollyPerson/matrix/actions/workflows/ci.yml)
+
 This is my C++20 matrix library project. I built it to understand what is
 actually happening inside a matrix class: how the data is stored, how
 operators work, why loop order affects performance, and why numerical
