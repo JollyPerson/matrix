@@ -3,11 +3,12 @@
 #include <cstddef>
 #include <ostream>
 
+template<typename T>
 class Matrix {
 private:
     std::size_t rows;
     std::size_t cols;
-    double *elements;
+    T *elements;
 
     friend Matrix operator*(const Matrix &left, const Matrix &right);
 
@@ -24,68 +25,69 @@ public:
     Matrix(const Matrix &old);
 
     //Copy Assignment
-    Matrix &operator=(const Matrix &old);
+    Matrix<T> &operator=(const Matrix &old);
 
     //Move constructor (accepts a rvalue)
     Matrix(Matrix &&other) noexcept;
 
     //Move assignment (accepts a rvalue)
-    Matrix &operator=(Matrix &&other) noexcept;
+    Matrix<T> &operator=(Matrix &&other) noexcept;
 
     inline std::size_t offset(size_t x, size_t y) const {
         return x * cols + y;
     }
 
-    inline double& operator()(size_t i, size_t j) {
+    inline T& operator()(size_t i, size_t j) {
         return elements[i * cols + j]; // inlined directly to a single pointer offset!
     }
 
-    inline double operator()(size_t i, size_t j) const {
+    inline T operator()(size_t i, size_t j) const {
         return elements[i * cols + j];
     }
 
-    double &at(size_t i, size_t j);
+    T &at(size_t i, size_t j);
 
-    double at(size_t i, size_t j) const;
+    T at(size_t i, size_t j) const;
 
-    Matrix &operator+=(const Matrix &other);
+    Matrix<T> &operator+=(const Matrix &other);
 
-    Matrix &operator*=(double scalar);
+    Matrix<T> &operator*=(double scalar);
 
-    Matrix &operator-=(const Matrix &other);
+    Matrix<T> &operator-=(const Matrix &other);
 
-    Matrix &operator/=(double scalar);
+    Matrix<T> &operator/=(double scalar);
 
 
-    Matrix transpose() const;
+    Matrix<T> transpose() const;
 
     void flush_zero() const;
 
-    void swap(Matrix &other) noexcept;
+    void swap(Matrix<T> &other) noexcept;
 
 
     std::size_t get_row_count() const;
 
     std::size_t get_coloumn_count() const;
 
-    static Matrix identity(size_t size);
+    static Matrix<T> identity(size_t size);
 
-    Matrix(std::initializer_list<std::initializer_list<double>> list);
+    Matrix<T>(std::initializer_list<std::initializer_list<T>> list);
     
     void swap_rows(size_t row1, size_t row2);
 };
 
-void swap(Matrix &lhs, Matrix &rhs) noexcept;
+template<typename T>
+void swap(Matrix<T> &lhs, Matrix<T> &rhs) noexcept;
 
-Matrix operator+(Matrix lhs, const Matrix &rhs);
+Matrix<T> operator+(Matrix<T> lhs, const Matrix<T> &rhs);
 
-Matrix operator-(Matrix lhs, const Matrix &rhs);
+Matrix<T> operator-(Matrix<T> lhs, const Matrix<T> &rhs);
 
-Matrix operator*(Matrix m, double scalar);
+Matrix<T> operator*(Matrix<T> m, double scalar);
 
-Matrix operator*(double scalar, Matrix m);
+Matrix<T> operator*(double scalar, Matrix<T> m);
 
-Matrix operator-(Matrix m);
+Matrix<T> operator-(Matrix<T> m);
 
 Matrix slow_multiply(const Matrix &left, const Matrix &right);
 
