@@ -34,6 +34,22 @@
             }
         },
         {
+            "name": "sanitize-macos",
+            "displayName": "Sanitizers (macOS Clang)",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/Sanitize",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "MATRIX_ENABLE_SANITIZERS": "ON"
+            }
+        },
+        {
             "name": "debug-windows",
             "displayName": "Debug (Windows/MSYS2)",
             "generator": "MinGW Makefiles",
@@ -74,6 +90,10 @@
         {
             "name": "release-macos",
             "configurePreset": "release-macos"
+        },
+        {
+            "name": "sanitize-macos",
+            "configurePreset": "sanitize-macos"
         },
         {
             "name": "debug-windows",
