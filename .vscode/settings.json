@@ -1,3 +1,8 @@
 {
-    "C_Cpp.default.compilerPath": "/usr/bin/g++"
+    "cmake.configureSettings": {
+        "CMAKE_CXX_COMPILER": "/usr/local/bin/g++-15",
+        "CMAKE_C_COMPILER": "/usr/local/bin/gcc-15"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++20"
 }

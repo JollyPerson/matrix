@@ -13,8 +13,8 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_C_COMPILER": "/usr/bin/clang",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+                "CMAKE_C_COMPILER": "/usr/local/bin/gcc-15",
+                "CMAKE_CXX_COMPILER": "/usr/local/bin/g++-15"
             }
         },
         {
@@ -29,8 +29,8 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_C_COMPILER": "/usr/bin/clang",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+                "CMAKE_C_COMPILER": "/usr/local/bin/gcc-15",
+                "CMAKE_CXX_COMPILER": "/usr/local/bin/g++-15"
             }
         },
         {

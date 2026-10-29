@@ -6,9 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(matrix_tests
-    matrix.cpp
     tests.cpp
     lu.cpp
+    matrix.hpp
+    matrix.tpp
 )
 
 set_target_properties(matrix_tests PROPERTIES
