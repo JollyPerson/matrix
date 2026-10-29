@@ -15,9 +15,9 @@ void test_solver() {
         { 8.0}
     };
 
-    Matrix<double> x = solve(A,b);
+    Matrix<double> x = matrix::solve(A,b);
     std::cout << "x:\n" << x << "\n";
-    assert(residual(A, b, x) < 1e-12);
+    assert(matrix::residual(A, b, x) < 1e-12);
 }
 
 void test_solver_partial_pivoting() {
@@ -30,11 +30,11 @@ void test_solver_partial_pivoting() {
         {2.0}
     };
 
-    Matrix<double> x = solve(A, b);
+    Matrix<double> x = matrix::solve(A, b);
 
     assert(std::abs(x(0, 0) - 1.0) < 1e-12);
     assert(std::abs(x(1, 0) - 1.0) < 1e-12);
-    assert(residual(A, b, x) < 1e-12);
+    assert(matrix::residual(A, b, x) < 1e-12);
 }
 
 void test_solver_tiny_pivot() {
@@ -48,11 +48,11 @@ void test_solver_tiny_pivot() {
         {2.0}
     };
 
-    Matrix<double> x = solve(A, b);
+    Matrix<double> x = matrix::solve(A, b);
 
     assert(std::abs(x(0, 0) - 1.0) < 1e-12);
     assert(std::abs(x(1, 0) - 1.0) < 1e-12);
-    assert(residual(A, b, x) < 1e-12);
+    assert(matrix::residual(A, b, x) < 1e-12);
 }
 
 void test_solver_singular_matrix() {
@@ -67,7 +67,7 @@ void test_solver_singular_matrix() {
 
     bool threw = false;
     try {
-        (void)solve(A, b);
+        (void)matrix::solve(A, b);
     } catch (const std::runtime_error &) {
         threw = true;
     }
@@ -133,7 +133,7 @@ void test_stability_epsilon_pivoting() {
     Matrix<double> b_eps{{1.0}, {2.0}};
 
     Matrix<double> x_no_pivot = solve_naive_no_pivot(A_eps, b_eps);
-    Matrix<double> x_with_pivot = solve(A_eps, b_eps);
+    Matrix<double> x_with_pivot = matrix::solve(A_eps, b_eps);
 
     std::cout << "Without pivoting : x = [" << x_no_pivot(0, 0) << ", " << x_no_pivot(1, 0) << "]\n";
     std::cout << "With pivoting    : x = [" << x_with_pivot(0, 0) << ", " << x_with_pivot(1, 0) << "]\n";
@@ -150,8 +150,8 @@ void test_stability_random_matrices() {
     for (size_t n : {10, 100, 500}) {
         Matrix<double> A = generate_matrix(100 + static_cast<int>(n), n, n, -100.0, 100.0);
         Matrix<double> b = generate_matrix(200 + static_cast<int>(n), n, 1, -100.0, 100.0);
-        Matrix<double> x = solve(A, b);
-        double res = residual(A, b, x);
+        Matrix<double> x = matrix::solve(A, b);
+        double res = matrix::residual(A, b, x);
         std::cout << std::left << std::setw(10) << n
                   << std::setw(25) << std::scientific << std::setprecision(6) << res << "\n";
         assert(res < 1e-8);
@@ -173,8 +173,8 @@ void test_stability_hilbert_ill_conditioning() {
         Matrix<double> b = H * x_true;
 
         try {
-            Matrix<double> x_comp = solve(H, b);
-            double res = residual(H, b, x_comp);
+            Matrix<double> x_comp = matrix::solve(H, b);
+            double res = matrix::residual(H, b, x_comp);
             double f_err = max_forward_error(x_comp, x_true);
 
             std::cout << std::left << std::setw(10) << n
@@ -190,13 +190,66 @@ void test_stability_hilbert_ill_conditioning() {
     }
 }
 
+template <typename T>
+Matrix<T> make_hilbert_typed(std::size_t n) {
+    Matrix<T> H(n, n);
+    for (std::size_t i = 0; i < n; ++i) {
+        for (std::size_t j = 0; j < n; ++j) {
+            H(i, j) = T{1} / static_cast<T>(i + j + 1);
+        }
+    }
+    return H;
+}
+
+template <std::floating_point T>
+std::size_t first_hilbert_failure(T error_limit) {
+    for (std::size_t n = 2; n <= 14; ++n) {
+        const Matrix<T> H = make_hilbert_typed<T>(n);
+        const Matrix<T> expected(n, 1);
+        Matrix<T> rhs = H * expected;
+        for (std::size_t i = 0; i < n; ++i) {
+            rhs(i, 0) = T{0};
+            for (std::size_t j = 0; j < n; ++j) {
+                rhs(i, 0) += H(i, j);
+            }
+        }
+
+        try {
+            const Matrix<T> actual = matrix::solve(H, rhs);
+            T forward_error = T{0};
+            for (std::size_t i = 0; i < n; ++i) {
+                forward_error = std::max(forward_error, std::abs(actual(i, 0) - T{1}));
+            }
+            if (forward_error > error_limit) {
+                return n;
+            }
+        } catch (const std::runtime_error&) {
+            return n;
+        }
+    }
+    return 0;
+}
+
+void test_hilbert_precision_experiment() {
+    const std::size_t float_failure = first_hilbert_failure<float>(1e-2F);
+    const std::size_t double_failure = first_hilbert_failure<double>(1e-6);
+
+    std::cout << "\n--- Part 11 Experiment: float vs double Hilbert matrices ---\n";
+    std::cout << "  First float failure : n = " << float_failure << "\n";
+    std::cout << "  First double failure: n = " << double_failure << "\n";
+
+    assert(float_failure != 0);
+    assert(double_failure != 0);
+    assert(float_failure < double_failure);
+}
+
 void test_stability_singular_vs_perturbed() {
     std::cout << "\n--- Stability Test: Singular vs Near-Singular Matrix<double> ---\n";
     Matrix<double> A_sing{{1.0, 2.0}, {1.0, 2.0}};
     Matrix<double> b_sing{{3.0}, {3.0}};
     bool threw_sing = false;
     try {
-        (void)solve(A_sing, b_sing);
+        (void)matrix::solve(A_sing, b_sing);
     } catch (const std::runtime_error &) {
         threw_sing = true;
     }
@@ -204,9 +257,9 @@ void test_stability_singular_vs_perturbed() {
 
     Matrix<double> A_near{{1.0, 2.0}, {1.0, 2.0 + 1e-13}};
     try {
-        Matrix<double> x_near = solve(A_near, b_sing);
+        Matrix<double> x_near = matrix::solve(A_near, b_sing);
         std::cout << "Perturbed by 1e-13: Solved x = [" << x_near(0, 0) << ", " << x_near(1, 0)
-                  << "], Residual = " << residual(A_near, b_sing, x_near) << "\n";
+                  << "], Residual = " << matrix::residual(A_near, b_sing, x_near) << "\n";
     } catch (const std::exception &e) {
         std::cout << "Perturbed by 1e-13: Threw exception: " << e.what() << "\n";
     }
@@ -215,4 +268,3 @@ void test_stability_singular_vs_perturbed() {
 // ==========================================
 // LU Decomposition Tests
 // ==========================================
-

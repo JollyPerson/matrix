@@ -14,7 +14,8 @@ add_executable(matrix_tests
     tests/benchmark_tests.cpp
     tests/test_declarations.hpp
     tests/test_helpers.hpp
-    lu.cpp
+    lu.hpp
+    lu.tpp
     matrix.hpp
     matrix.tpp
     matrix_algorithms.hpp

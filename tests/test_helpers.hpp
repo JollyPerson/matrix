@@ -14,6 +14,14 @@
 #include "../lu.hpp"
 #include "../matrix.hpp"
 
+template <typename T>
+concept has_matrix_solver = requires(Matrix<T> A, Matrix<T> b) {
+    matrix::solve(A, b);
+};
+
+static_assert(!has_matrix_solver<int>,
+              "solve must reject integer matrices at compile time");
+
 // ==========================================
 // Benchmarking & Generation Helpers
 // ==========================================
@@ -93,14 +101,14 @@ void test_reusable_arithmetic() {
     };
 
     const T epsilon = test_tolerance<T>();
-    assert(approx_equal(a + b, Matrix<T>{{T{6}, T{8}}, {T{10}, T{12}}}, epsilon));
-    assert(approx_equal((a + b) - b, a, epsilon));
-    assert(approx_equal(T{2} * a, a + a, epsilon));
-    assert(approx_equal(a.transpose().transpose(), a, epsilon));
-    assert(approx_equal(a * b,
+    assert(matrix::approx_equal(a + b, Matrix<T>{{T{6}, T{8}}, {T{10}, T{12}}}, epsilon));
+    assert(matrix::approx_equal((a + b) - b, a, epsilon));
+    assert(matrix::approx_equal(T{2} * a, a + a, epsilon));
+    assert(matrix::approx_equal(a.transpose().transpose(), a, epsilon));
+    assert(matrix::approx_equal(a * b,
                         Matrix<T>{{T{19}, T{22}}, {T{43}, T{50}}},
                         epsilon));
-    assert(approx_equal(Matrix<T>::identity(2) * a, a, epsilon));
+    assert(matrix::approx_equal(Matrix<T>::identity(2) * a, a, epsilon));
 }
 
 template <std::floating_point T>
@@ -114,8 +122,8 @@ void test_reusable_solver() {
         {T{8}}
     };
 
-    const Matrix<T> x = solve(a, b);
-    assert(residual(a, b, x) < T{1000} * std::numeric_limits<T>::epsilon());
+    const Matrix<T> x = matrix::solve(a, b);
+    assert(matrix::residual(a, b, x) < T{1000} * std::numeric_limits<T>::epsilon());
 }
 
 template <typename T>

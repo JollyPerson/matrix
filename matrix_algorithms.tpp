@@ -56,6 +56,8 @@ Matrix<T> operator*(const Matrix<T>& left, const Matrix<T>& right) {
     return result;
 }
 
+namespace matrix {
+
 template <typename T>
 Matrix<T> slow_multiply(const Matrix<T>& left, const Matrix<T>& right) {
     const std::size_t left_cols = left.get_coloumn_count();
@@ -102,6 +104,8 @@ bool approx_equal(const Matrix<T>& left, const Matrix<T>& right, T epsilon) {
     return true;
 }
 
+}
+
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
     for (std::size_t i = 0; i < matrix.get_row_count(); ++i) {
@@ -113,6 +117,8 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
     }
     return os;
 }
+
+namespace matrix {
 
 template <std::floating_point T>
 Matrix<T> solve(Matrix<T> A, Matrix<T> b) {
@@ -131,7 +137,7 @@ Matrix<T> solve(Matrix<T> A, Matrix<T> b) {
         throw std::invalid_argument("Matrix row dimensions of A and B do not match for Gaussian elimination.");
     }
 
-    const T scale = maxValue(A);
+    const T scale = matrix::maxValue(A);
     const T tolerance = std::numeric_limits<T>::epsilon() * scale * static_cast<T>(rows_a);
 
     for (std::size_t i = 0; i < cols_a; ++i) {
@@ -202,4 +208,6 @@ T residual(const Matrix<T>& A, const Matrix<T>& b, const Matrix<T>& x) {
         maximum = std::max(maximum, std::abs(difference(i, 0)));
     }
     return maximum;
+}
+
 }

@@ -32,12 +32,14 @@ int main() {
     test_stability_epsilon_pivoting();
     test_stability_random_matrices();
     test_stability_hilbert_ill_conditioning();
+    test_hilbert_precision_experiment();
     test_stability_singular_vs_perturbed();
     test_lu_factor_reconstruction();
     test_lu_solver();
     test_lu_determinant();
     test_lu_inverse();
     test_lu_singular();
+    test_lu_float();
     benchmark_lu_vs_gaussian_multisolve();
 
     std::cout << "All tests passed successfully!\n";

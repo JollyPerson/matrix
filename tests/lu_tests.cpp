@@ -8,7 +8,7 @@ void test_lu_factor_reconstruction() {
         {1.0,  1.0,  1.0,  2.0}
     };
 
-    matrix::LUDecomposition lu(A);
+    matrix::LUDecomposition<double> lu(A);
     const size_t n = A.get_row_count();
 
     Matrix<double> L = Matrix<double>::identity(n);
@@ -32,7 +32,7 @@ void test_lu_factor_reconstruction() {
         }
     }
 
-    assert(approx_equal(L * U, PA, 1e-12));
+    assert(matrix::approx_equal(L * U, PA, 1e-12));
 }
 
 void test_lu_solver() {
@@ -50,10 +50,10 @@ void test_lu_solver() {
         { 8.0}
     };
 
-    matrix::LUDecomposition lu(A);
+    matrix::LUDecomposition<double> lu(A);
     Matrix<double> x = lu.solve(b);
 
-    assert(residual(A, b, x) < 1e-12);
+    assert(matrix::residual(A, b, x) < 1e-12);
 }
 
 void test_lu_determinant() {
@@ -61,19 +61,19 @@ void test_lu_determinant() {
         {2.0, 1.0},
         {1.0, 3.0}
     };
-    matrix::LUDecomposition lu_A(A);
+    matrix::LUDecomposition<double> lu_A(A);
     assert(std::abs(lu_A.determinant() - 5.0) < 1e-12);
 
     Matrix<double> B{
         {0.0, 1.0},
         {1.0, 0.0}
     };
-    matrix::LUDecomposition lu_B(B);
+    matrix::LUDecomposition<double> lu_B(B);
     assert(std::abs(lu_B.determinant() - (-1.0)) < 1e-12);
 
     // det(AB) == det(A) * det(B)
     Matrix<double> AB = A * B;
-    matrix::LUDecomposition lu_AB(AB);
+    matrix::LUDecomposition<double> lu_AB(AB);
     assert(std::abs(lu_AB.determinant() - (lu_A.determinant() * lu_B.determinant())) < 1e-11);
 }
 
@@ -85,11 +85,11 @@ void test_lu_inverse() {
         {1.0,  1.0,  1.0,  2.0}
     };
 
-    matrix::LUDecomposition lu(A);
+    matrix::LUDecomposition<double> lu(A);
     Matrix<double> A_inv = lu.inverse();
 
-    assert(approx_equal(A * A_inv, Matrix<double>::identity(A.get_row_count()), 1e-12));
-    assert(approx_equal(A_inv * A, Matrix<double>::identity(A.get_row_count()), 1e-12));
+    assert(matrix::approx_equal(A * A_inv, Matrix<double>::identity(A.get_row_count()), 1e-12));
+    assert(matrix::approx_equal(A_inv * A, Matrix<double>::identity(A.get_row_count()), 1e-12));
 }
 
 void test_lu_singular() {
@@ -100,13 +100,28 @@ void test_lu_singular() {
 
     bool threw = false;
     try {
-        matrix::LUDecomposition lu(singular);
+        matrix::LUDecomposition<double> lu(singular);
         (void)lu;
     } catch (const std::runtime_error &) {
         threw = true;
     }
 
     assert(threw);
+}
+
+void test_lu_float() {
+    const Matrix<float> A{
+        {3.0F, 1.0F},
+        {1.0F, 2.0F}
+    };
+    const Matrix<float> b{
+        {9.0F},
+        {8.0F}
+    };
+
+    matrix::LUDecomposition<float> lu(A);
+    const Matrix<float> x = lu.solve(b);
+    assert(matrix::residual(A, b, x) < 1e-5F);
 }
 
 void benchmark_lu_vs_gaussian_multisolve() {
@@ -121,14 +136,14 @@ void benchmark_lu_vs_gaussian_multisolve() {
 
     auto t0 = std::chrono::high_resolution_clock::now();
     for (const auto &b : rhs_list) {
-        Matrix<double> x = solve(A, b);
+        Matrix<double> x = matrix::solve(A, b);
         (void)x;
     }
     auto t1 = std::chrono::high_resolution_clock::now();
     auto full_solve_dur = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0);
 
     auto t2 = std::chrono::high_resolution_clock::now();
-    matrix::LUDecomposition lu(A);
+    matrix::LUDecomposition<double> lu(A);
     for (const auto &b : rhs_list) {
         Matrix<double> x = lu.solve(b);
         (void)x;
@@ -145,4 +160,3 @@ void benchmark_lu_vs_gaussian_multisolve() {
 // ==========================================
 // main
 // ==========================================
-

@@ -37,21 +37,21 @@ void test_addition_and_subtraction() {
     };
 
     // Commutativity: A + B == B + A
-    assert(approx_equal(a + b, b + a));
+    assert(matrix::approx_equal(a + b, b + a));
 
     // Inverse: (A + B) - B ≈ A
-    assert(approx_equal((a + b) - b, a));
+    assert(matrix::approx_equal((a + b) - b, a));
 
     // Compound assignment: += and -=
     Matrix<double> c = a;
     c += b;
-    assert(approx_equal(c, a + b));
+    assert(matrix::approx_equal(c, a + b));
     c -= b;
-    assert(approx_equal(c, a));
+    assert(matrix::approx_equal(c, a));
 
     // Unary minus: -A + A ≈ 0
     Matrix<double> zeros(2, 2);
-    assert(approx_equal(-a + a, zeros));
+    assert(matrix::approx_equal(-a + a, zeros));
 }
 
 void test_scalar_multiplication_and_division() {
@@ -61,17 +61,17 @@ void test_scalar_multiplication_and_division() {
     };
 
     // Scalar * Matrix<double> == Matrix<double> * Scalar == A + A
-    assert(approx_equal(2.0 * a, a * 2.0));
-    assert(approx_equal(2.0 * a, a + a));
+    assert(matrix::approx_equal(2.0 * a, a * 2.0));
+    assert(matrix::approx_equal(2.0 * a, a + a));
 
     // Matrix<double> *= scalar
     Matrix<double> scaled = a;
     scaled *= 3.0;
-    assert(approx_equal(scaled, 3.0 * a));
+    assert(matrix::approx_equal(scaled, 3.0 * a));
 
     // Matrix<double> /= scalar
     scaled /= 3.0;
-    assert(approx_equal(scaled, a));
+    assert(matrix::approx_equal(scaled, a));
 
     // Division by zero throws
     bool threw = false;
@@ -98,8 +98,8 @@ void test_transpose() {
     assert(at(2, 1) == 6.0);
 
     // Double transpose identity: (A^T)^T == A
-    assert(approx_equal(a.transpose().transpose(), a));
-    assert(approx_equal(transpose(transpose(a)), a));
+    assert(matrix::approx_equal(a.transpose().transpose(), a));
+    assert(matrix::approx_equal(matrix::transpose(matrix::transpose(a)), a));
 }
 
 void test_identity_matrix() {

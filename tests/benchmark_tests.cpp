@@ -40,14 +40,14 @@ void benchmark_fast_slow_multi() {
     const Matrix<double> b = generate_matrix<double>(2, n, n);
 
     auto start_slow = std::chrono::high_resolution_clock::now();
-    Matrix<double> slow_res = slow_multiply(a, b);
+    Matrix<double> slow_res = matrix::slow_multiply(a, b);
     auto end_slow = std::chrono::high_resolution_clock::now();
 
     auto start_fast = std::chrono::high_resolution_clock::now();
     Matrix<double> fast_res = a * b;
     auto end_fast = std::chrono::high_resolution_clock::now();
 
-    assert(approx_equal(slow_res, fast_res));
+    assert(matrix::approx_equal(slow_res, fast_res));
 
     auto slow_dur = std::chrono::duration_cast<std::chrono::microseconds>(end_slow - start_slow);
     auto fast_dur = std::chrono::duration_cast<std::chrono::microseconds>(end_fast - start_fast);
